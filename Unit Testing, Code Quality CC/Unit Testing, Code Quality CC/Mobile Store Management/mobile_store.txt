@@ -1,0 +1,163 @@
+package com.mobile.test;
+
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
+import com.mobile.model.Mobile;
+import com.mobile.util.MobileStore;
+import com.mobile.exception.InvalidMobileException;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class MobileStoreTest {
+	
+	private static List<Mobile> mobileList = new ArrayList<Mobile>();
+	private static MobileStore mobileStoreObj;
+
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		
+		mobileStoreObj = new MobileStore();
+		
+		//Create few  objects for Mobile class and add to mobileList.
+		//Use that list to test all the methods in MobileTest class that requires a list of Mobile 
+		mobileList.add(new Mobile("Samsung1234","Basic","Samsung","S102",5000.0));
+		mobileList.add(new Mobile("Nokia1234","Basic","Nokia","N12",6500.0));
+		mobileList.add(new Mobile("Samsung5678","SmartPhone","Samsung","SP123",50000.0));
+		mobileList.add(new Mobile("Samsung6789","Basic","Samsung","SB12",4500.0));
+		mobileList.add(new Mobile("Nokia2468","Basic","Nokia","N14",3500.0));
+		mobileList.add(new Mobile("Nokia1357","SmartPhone","Nokia","N104",20000.0));
+
+
+
+
+
+		
+		
+		
+	}
+		
+	//Test the validateMobileType method when the value is SmartPhone
+	@Test
+	public void test11ValidateMobileTypeWhenSmartPhone() throws InvalidMobileException{
+			
+		//fill code	
+		assertTrue(mobileStoreObj.validateMobileType("SmartPhone"));
+	
+	}
+	
+	//Test the validateMobileType method when the value is Basic
+	@Test
+	public void test12ValidateMobileTypeWhenBasic() throws InvalidMobileException {
+		
+		//fill code	
+		assertTrue(mobileStoreObj.validateMobileType("Basic"));
+
+	
+	}
+	
+	//Test the validateMobileType method when the value is Invalid
+	@Test(expected=InvalidMobileException.class)
+	public void test13ValidateMobileTypeWhenInvalid() throws InvalidMobileException {
+		
+		//fill code	
+		mobileStoreObj.validateMobileType("touch");
+	
+	}
+	
+	//Test the viewMobile method for a valid IMEINumber
+	@Test
+	public void test14ViewMobileForValidIMEINumber() throws InvalidMobileException {
+		
+		//fill code	
+		//assertTrue(mobileStoreObj.viewMobile(mobileList, "Samsung1234"));
+		assertTrue(mobileStoreObj.viewMobile(mobileList, "Samsung1234").getIMEINumber()=="Samsung1234");
+	}
+	
+	//Test the viewMobile method for invalid IMEINumber
+	@Test(expected=InvalidMobileException.class)
+	public void test15ViewMobileForInvalidIMEINumber() throws InvalidMobileException {
+		
+		//fill code	
+		mobileStoreObj.viewMobile(mobileList, "12345678");
+	
+	}
+	
+	//Test the viewMobilesByBrand method
+	@Test
+	public void test16ViewMobilesByBrand() throws InvalidMobileException {
+		
+		//fill code	
+		List<Mobile> m1= mobileStoreObj.viewMobilesByBrand(mobileList,"Nokia");
+		assertTrue(m1.get(0).getBrand()=="Nokia");
+	
+	}
+	
+	//Test the viewMobilesByBrand method for empty list
+	@Test(expected=InvalidMobileException.class)
+	public void test17ViewMobilesByBrandForEmptyList() throws InvalidMobileException {
+		
+		ArrayList<Mobile> m=new ArrayList<>();
+		//fill code	
+		mobileStoreObj.viewMobilesByBrand(m, "nnn");
+	
+	}
+	
+	//Test the viewMobilesBrandWise method 
+	@Test
+	public void test18ViewMobilesBrandWise() throws InvalidMobileException {
+		
+		//fill code	
+		//Map<String,List<Mobile>> m2=mobileStoreObj.viewMobilesBrandWise(mobileList);
+		//Set<String> key=m2.keySet();
+		asssertFalse( mobileStoreObj.viewMobilesBrandWise(mobileList).isEmpty() );
+
+	}
+		
+	private void asssertFalse(boolean empty) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	//Test the viewMobilesBrandWise method for empty list
+	@Test(expected=InvalidMobileException.class)
+	public void test19ViewMobilesBrandWiseForEmptyList() throws InvalidMobileException {
+		
+		//fill code	
+		ArrayList<Mobile> m=new ArrayList<>();
+		mobileStoreObj.viewMobilesBrandWise(m);
+	
+	}
+	
+	//Test the countTotalModelsForEachBrand method
+	@Test
+	public void test20CountTotalModelsForEachBrand() throws InvalidMobileException{
+		
+		//fill code	
+		//Map<String,Integer> m3=mobileStoreObj.countTotalModelsForEachBrand(mobileList, 100000.0);
+		//Set<String> key=m3.keySet();
+		asssertFalse(mobileStoreObj.countTotalModelsForEachBrand(mobileList, 100000.0).isEmpty());
+		
+	
+	}
+	
+	//Test the countTotalModelsForEachBrand method for empty list
+	@Test(expected=InvalidMobileException.class)
+	public void test21CountTotalModelsForEachBrandForEmptyList() throws InvalidMobileException {
+		
+		//fill code	
+		ArrayList<Mobile> m=new ArrayList<>();
+		mobileStoreObj.countTotalModelsForEachBrand(m, 50.0);
+	
+	}
+}

@@ -1,0 +1,279 @@
+
+MobileAccessoriesShop
+
+BillController.java
+package com.controller;
+
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.stereotype.Controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import com.model.Order;
+import com.service.BillService;
+
+//use appropriate annotation to configure BillController as Controller
+@Controller
+public class BillController {
+ @Autowired
+ private BillService billService;
+
+ // invoke the service class - calculateTotalCost method.
+ @RequestMapping(value = "/showPage", method = RequestMethod.GET)
+ public String showPage(@ModelAttribute("order") Order order) {
+  return "showpage";
+ }
+ @RequestMapping(value="/billDesk", method = RequestMethod.POST)
+ public String calculateTotalCost(@Valid @ModelAttribute("order") Order order, BindingResult result,
+   ModelMap model) {
+  if (result.hasErrors()) {
+   return "showpage";
+  }
+
+  // fill the code
+  
+  double totalCost =billService.calculateTotalCost(order);
+  model.addAttribute("order", order);
+  model.addAttribute("totalCost", totalCost);
+  return "billdesk";
+ }
+ 
+ @ModelAttribute("productList")
+ public Map<String,String> populateProductType(){
+  Map<String,String> productTypes = new HashMap<String, String>();
+  productTypes.put("HeadPhone", "HeadPhone");
+  productTypes.put("TravelAdapter", "TravelAdapter");
+  productTypes.put("MemoryCard", "MemoryCard");
+  productTypes.put("PenDrive", "PenDrive");
+  productTypes.put("USBCable", "USBCable");
+  return productTypes;
+ }
+
+}
+
+
+Internationalization.java
+package com.controller;
+
+import java.util.Locale;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+@Configuration
+public class InternationalizationConfig extends WebMvcConfigurerAdapter {
+
+//Create a SessionLocaleResolver object and set the default locale to English  return the SessionLocaleResolver object  
+ @Bean
+   public LocaleResolver localeResolver() {
+  SessionLocaleResolver resolver = new SessionLocaleResolver();
+  resolver.setDefaultLocale(Locale.ENGLISH);
+  return resolver;
+   }
+   
+   //Create LocaleChangeInterceptor object and set the parameter name as language and return the localeChangeInterceptor
+   @Bean
+   public LocaleChangeInterceptor localeChangeInterceptor() {
+    LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+    interceptor.setParamName("language");
+    return interceptor;
+
+   }
+   
+   
+   //register the LocaleChangeInterceptor
+   @Override
+   public void addInterceptors(InterceptorRegistry registry) {
+   registry.addInterceptor(localeChangeInterceptor());
+      
+   }
+}
+
+BillService.java
+
+package com.service;
+
+import org.springframework.stereotype.Service;
+
+import com.model.Order;
+
+//use appropriate annotation to configure BillService as a Service
+@Service
+public class BillService {
+ 
+ //calculate the totalCost and return the cost
+ public double calculateTotalCost(Order order) {
+  double price=0.0;
+  double temp = 0.0;
+  double cost=0.0;
+  // fill the code
+  if(order.getProductName().equals("HeadPhone")) {
+   price=450.0;
+  }
+  else if(order.getProductName().equals("TravelAdapter")) {
+   price=1000.0;
+  }
+  else if(order.getProductName().equals("MemoryCard")){
+   price=300.0;
+  }
+  else if(order.getProductName().equals("PenDrive")) {
+   price=650.0;
+  }
+  else if(order.getProductName().equals("USBCable")) {
+   price=800.0;
+  }
+  
+  temp=(double) order.getQ
+
+uantity()*price;
+  cost=temp+(temp*3.0/100.0);
+  return cost;
+ }
+
+}
+
+
+billdesk.jsp
+<%@page isELIgnored="false" %>
+<html>
+<body bgcolor="lavender">
+
+<h2>Hi ${order.getCustomerName()}!!! You need to pay Rs.${totalCost}</h2>
+
+
+</body>
+</html>
+
+
+showpage.jsp
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+ pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color: lavender">
+ <h1>
+  <center>Welcome to Mobile Accessories Store</center>
+ </h1>
+ <!--  Do not change the below line -->
+ <align> <a href="/showPage?language=en">English</a>| <a
+  href="/showPage?language=de">German</a>| <a
+  href="/showPage?language=fr">French</a> </align>
+ <!--  Design the page as per the requirements-->
+ <form:form method="post" action="/billDesk" modelAttribute="order">
+  <table>
+   <tr>
+    <td id="id1"><spring:message code="label.customerName" /></td>
+    <td><form:input path="customerName" type="text"
+      id="customerName" /></td>
+    <td><form:errors path="error.customerName.blank"></form:errors></td>
+   </tr>
+   <tr>
+    <td id="id2"><spring:message code="label.contactNumber" /></td>
+    <td><form:input type="text" path="contactNumber"
+      id="contactNumber" /></td>
+    <td><form:errors path="error.contactNumber.blank"></form:errors></td>
+   </tr>
+   <tr>
+    <td id="id3"><spring:message code="label.productName" /></td>
+    <td><form:select path="productName" id="productName"
+      items="${productList}" /></td>
+    <td></td>
+   </tr>
+   <tr>
+    <td id="id4"><spring:message code="label.quantity" /></td>
+    <td><form:input type="text" path="quantity" id="quantity" /></td>
+    <td><form:errors path="error.quantity.negative"></form:errors></td>
+   </tr>
+   <tr>
+    <td><form:input type="submit" id="submit" path="label.submit" />
+    </td>
+    <td><form:input type="reset" id="cancel" path="label.cancel" />
+    </td>
+    <td />
+   </tr>
+  </table>
+ </form:form>
+
+
+</body>
+</html>
+
+
+MobileAccessoriesShopApplication.java
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.controller","com.model","com.service"})
+public class MobileAccessoriesShopApplication {
+
+ public static void main(String[] args) {
+  SpringApplication.run(MobileAccessoriesShopApplication.class, args);
+ }
+
+}
+
+Order.java
+package com.model;
+
+import javax.validation.constraints.Positive;
+
+import org.springframework.lang.NonNull;
+
+//pojo class with required attributes,getters and setters 
+public class Order {
+ @NonNull
+ private String customerName;
+ @NonNull
+ private String contactNumber;
+ private String productName;
+ @Positive
+ private int quantity;
+ 
+ public String getCustomerName() {
+  return customerName;
+ }
+ public void setCustomerName(String customerName) {
+  this.customerName = customerName;
+ }
+ public String getContactNumber() {
+  return contactNumber;
+ }
+ public void setContactNumber(String contactNumber) {
+  this.contactNumber = contactNumber;
+ }
+ public String getProductName() {
+  return productName;
+ }
+ public void setProductName(String productName) {
+  this.productName = productName;
+ }
+ public int getQuantity() {
+  return quantity;
+ }
+ public void setQuantity(int quantity) {
+  this.quantity = quantity;
+ }
+ 
+}

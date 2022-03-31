@@ -1,0 +1,374 @@
+Automatic evaluation[+]
+LoanManagement/src/com/dao/CustomerDAO.java
+    1 package com.dao;
+    2 
+    3 import java.util.*;
+    4 
+    5 import com.exception.LoanException;
+    6 import com.model.Customer;
+    7 
+    8 public class CustomerDAO {
+    9 	
+   10 	List<Customer> customerList = new ArrayList<>();
+   11 	
+   12 	public void addCustomer(Customer customerObj){
+   13 		customerList.add(customerObj);
+   14 	}
+   15 	
+   16 	public List<Customer> viewAllCustomer(){
+   17 		if(customerList.isEmpty()){
+   18 			return null;
+   19 		}
+   20 		return customerList;		
+   21 	}
+   22 	
+   23 	public boolean deleteCustomer(int customerId){
+   24 		//boolean flag=false;
+   25 		for(Customer c : customerList){
+   26 			if(c.getCustomerId()==customerId){
+   27 				customerList.remove(c);
+   28 				return true;
+   29 			}
+   30 		}
+   31 		return false;
+   32 	}
+   33 	
+   34 	public boolean validateCustomerID(int customerId){
+   35 		
+   36 		try {
+   37 			if(customerId>=1000 && customerId<=9999)
+   38 			{
+   39 				return true;
+   40 			}
+   41 			else{
+   42 				throw new LoanException("Customer Id is invalid");
+   43 			}
+   44 		} catch (LoanException e) {
+   45 			// TODO Auto-generated catch block
+   46 			e.printStackTrace();
+   47 		}
+   48 		return false;
+   49 	}
+   50 
+   51 }
+   52 
+LoanManagement/src/com/dao/LoanDAO.java
+    1 package com.dao;
+    2 
+    3 
+    4 import java.util.ArrayList;
+    5 import java.util.List;
+    6 
+    7 import com.exception.LoanException;
+    8 //import com.model.Customer;
+    9 import com.model.Loan;
+   10 
+   11 //import java.io.IOException;
+   12 
+   13 public class LoanDAO {
+   14 	
+   15 	List<Loan> loanList = new ArrayList<>();
+   16 	
+   17 	public void issueLoan(Loan loanObj){
+   18 		loanList.add(loanObj);
+   19 	}
+   20 	
+   21 	public List<Loan> viewLoanByType(int loanType) throws LoanException {
+   22 		
+   23 		if(loanList.isEmpty()){
+   24 			return null;
+   25 		}
+   26 		else
+   27 		{
+   28 			List<Loan> temp= new ArrayList<>();
+   29 			for(Loan loan : loanList){
+   30 				if(loan.getLoanType().equals(loanType)){
+   31 					temp.add(loan);
+   32 				}
+   33 			}
+   34 			
+   35 			//try{
+   36 				if(temp==null) 
+   37 				{ 
+   38 				    // to check if temp is empty
+   39 					throw new LoanException("No loans available with type "+loanType);
+   40 				}
+   41 			//}
+   42 			//catch(LoanException e){
+   43 				
+   44 			//}
+   45 			/*inally{
+   46 				return temp;
+   47 			}*/	
+   48 			else{
+   49 			    return temp;
+   50 			}
+   51 		}			
+   52 	}
+   53 
+   54 }
+   55 
+LoanManagement/src/com/dao/PaymentDAO.java
+    1 package com.dao;
+    2 
+    3 import java.util.ArrayList;
+    4 import java.util.List;
+    5 
+    6 import com.model.Payment;
+    7 //import com.dao.LoanDAO;
+    8 //import com.dao.CustomerDAO;
+    9 
+   10 public class PaymentDAO {
+   11 	
+   12 	private List<Payment> paymentList = new  ArrayList<>();
+   13 	
+   14 	//private CustomerDAO custDAO;
+   15 
+   16 
+   17 	public void setPaymentList(List<Payment> paymentList ) {
+   18 		this.paymentList= paymentList;
+   19 	}
+   20 	
+   21 	public List<Payment> getPaymentList() {
+   22 		return paymentList;
+   23 	}
+   24 
+   25     public void makePayment(Payment obj){
+   26     	paymentList.add(obj);
+   27     }
+   28 	
+   29    /* public void updatePayment(int paymentId,double amount){
+   30     	
+   31     } */  
+   32     
+   33 }
+   34 
+LoanManagement/src/com/exception/LoanException.java
+    1 package com.exception;
+    2 
+    3 public class LoanException extends Exception {
+    4 	public LoanException(String msg){
+    5 		super(msg);
+    6 	}
+    7 }
+    8 
+LoanManagement/src/com/model/Customer.java
+    1 package com.model;
+    2 
+    3 public class Customer {
+    4 	
+    5 	int customerId;
+    6 	String customerName;
+    7 	String address;
+    8 	String panNumber;
+    9 	String emailId;
+   10 	
+   11 	public Customer(int customerId, String customerName, String address, String panNumber) {
+   12 		//String pan="";
+   13 		this.customerId = customerId;
+   14 		this.customerName = customerName;
+   15 		this.address = address;
+   16 		this.panNumber = panNumber;
+   17 	}
+   18 	
+   19 	public Customer() {
+   20 		//default
+   21 	}
+   22 
+   23 	public int getCustomerId() {
+   24 		return customerId;
+   25 	}
+   26 
+   27 	public void setCustomerId(int customerId) {
+   28 		this.customerId = customerId;
+   29 	}
+   30 
+   31 	public String getCustomerName() {
+   32 		return customerName;
+   33 	}
+   34 
+   35 	public void setCustomerName(String customerName) {
+   36 		this.customerName = customerName;
+   37 	}
+   38 
+   39 	public String getAddress() {
+   40 		return address;
+   41 	}
+   42 
+   43 	public void setAddress(String address) {
+   44 		this.address = address;
+   45 	}
+   46 
+   47 	public String getPanNumber() {
+   48 		return panNumber;
+   49 	}
+   50 
+   51 	public void setPanNumber(String panNumber) {
+   52 		this.panNumber = panNumber;
+   53 	}
+   54 
+   55 	public String getEmailId() {
+   56 		return emailId;
+   57 	}
+   58 
+   59 	public void setEmailId(String emailId) {
+   60 		this.emailId = emailId;
+   61 	}
+   62 	 
+   63 }
+   64 
+LoanManagement/src/com/model/Loan.java
+    1 package com.model;
+    2 
+    3 public class Loan {
+    4 	int loanNumber;
+    5 	String loanType="Vehicle";
+    6 	Customer customer;
+    7 	double loanAmount;
+    8 	double balanceLoanAmount;
+    9 	static final double MAXLOANAMOUNT=1500000;
+   10 	
+   11 	public Loan(){
+   12 		//default
+   13 	}	
+   14 
+   15 	public Loan(int loanNumber, String loanType, Customer customer, double loanAmount) {
+   16 		this.loanNumber = loanNumber;
+   17 		this.loanType = loanType;
+   18 		this.customer = customer;
+   19 		this.loanAmount = loanAmount;
+   20 		balanceLoanAmount=loanAmount;
+   21 	}
+   22 
+   23 	public int getLoanNumber() {
+   24 		return loanNumber;
+   25 	}
+   26 
+   27 	public void setLoanNumber(int loanNumber) {
+   28 		this.loanNumber = loanNumber;
+   29 	}
+   30 
+   31 	public String getLoanType() {
+   32 		return loanType;
+   33 	}
+   34 
+   35 	public void setLoanType(String loanType) {
+   36 		this.loanType = loanType;
+   37 	}
+   38 
+   39 	public Customer getCustomer() {
+   40 		return customer;
+   41 	}
+   42 
+   43 	public void setCustomer(Customer customer) {
+   44 		this.customer = customer;
+   45 	}
+   46 
+   47 	public double getLoanAmount() {
+   48 		return loanAmount;
+   49 	}
+   50 
+   51 	public void setLoanAmount(double loanAmount) {
+   52 		this.loanAmount = loanAmount;
+   53 	}
+   54 
+   55 	public double getBalanceLoanAmount() {
+   56 		return balanceLoanAmount;
+   57 	}
+   58 
+   59 	public void setBalanceLoanAmount(double balanceLoanAmount) {
+   60 		this.balanceLoanAmount = balanceLoanAmount;
+   61 	}
+   62 	
+   63 	
+   64 	public boolean checkBalanceAmount(double amountPaid){
+   65 		//float gst=3;
+   66 		return (balanceLoanAmount >= amountPaid);
+   67 		//double amount = balanceLoanAmount+balanceLoanAmount*gst/100;
+   68 		//if(balanceLoanAmount >= amountPaid)
+   69 		//	return true;
+   70 		//else
+   71 		//	return false;
+   72 	}
+   73 	
+   74 	
+   75 
+   76 	
+   77 }
+   78 
+LoanManagement/src/com/model/Payment.java
+    1 package com.model;
+    2 
+    3 import java.time.LocalDate;
+    4 
+    5 public class Payment {
+    6 	
+    7 	int paymentId;
+    8 	LocalDate dateOfPayment;
+    9 	Loan loanObj;
+   10 	double amount;
+   11 	String paymentMode;
+   12 	static final float GSTPERCENTAGE=2;
+   13 	
+   14 	public Payment(int paymentId, LocalDate dateOfPayment, Loan loanObj, double amount, String paymentMode) {
+   15 	
+   16 		this.paymentId = paymentId;
+   17 		this.dateOfPayment = dateOfPayment;
+   18 		this.loanObj = loanObj;
+   19 		this.amount = amount;
+   20 		this.paymentMode = paymentMode;
+   21 	}
+   22 
+   23 	public int getPaymentId() {
+   24 		return paymentId;
+   25 	}
+   26 
+   27 	public void setPaymentId(int paymentId) {
+   28 		this.paymentId = paymentId;
+   29 	}
+   30 
+   31 	public LocalDate getDateOfPayment() {
+   32 		return dateOfPayment;
+   33 	}
+   34 
+   35 	public void setDateOfPayment(LocalDate dateOfPayment) {
+   36 		this.dateOfPayment = dateOfPayment;
+   37 	}
+   38 
+   39 	public Loan getLoanObj() {
+   40 		return loanObj;
+   41 	}
+   42 
+   43 	public void setLoanObj(Loan loanObj) {
+   44 		this.loanObj = loanObj;
+   45 	}
+   46 
+   47 	public double getAmount() {
+   48 		return amount;
+   49 	}
+   50 
+   51 	public void setAmount(double amount) {
+   52 		this.amount = amount;
+   53 	}
+   54 
+   55 	public String getPaymentMode() {
+   56 		return paymentMode;
+   57 	}
+   58 
+   59 	public void setPaymentMode(String paymentMode) {
+   60 		this.paymentMode = paymentMode;
+   61 	}
+   62 
+   63 	public static float getGstpercentage() {
+   64 		return GSTPERCENTAGE;
+   65 	}
+   66 	
+   67 
+   68 
+   69 }
+   70 
+Grade
+Reviewed on Tuesday, 4 May 2021, 2:29 AM by Automatic grade
+Grade 100 / 100
+Assessment report
+[+]Grading and Feedback

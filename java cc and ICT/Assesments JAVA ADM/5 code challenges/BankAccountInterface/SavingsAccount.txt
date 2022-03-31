@@ -1,0 +1,15 @@
+public class SavingsAccount extends Account implements MaintenanceCharge{
+	  public SavingsAccount(String customerName, String accountNumber, double balance) {
+	    super(accountNumber, customerName, balance);
+	    // TODO Auto-generated constructor stub
+	  }
+
+	  @Override
+	  public float calculateMaintenanceCharge(float noOfYears) {
+	    // TODO Auto-generated method stub
+	    int m = 50;
+	    int n = (int) noOfYears;
+	    float mCharge = (m*n) + 50;
+	    return mCharge;
+	  }
+}

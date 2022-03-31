@@ -1,0 +1,352 @@
+Automatic evaluation[-]
+Proposed grade: 100.0 / 100
+Result Description
+[+]Grading and Feedback
+ELearningApp/src/com/dao/Academy.java
+    1 package com.dao;
+    2 
+    3 
+    4 import java.util.List;
+    5 
+    6 import com.exception.InvalidCourseException;
+    7 import com.exception.InvalidStudentException;
+    8 import com.model.Course;
+    9 import com.model.Student;
+   10 
+   11 
+   12 
+   13 public class Academy {
+   14 
+   15 	final StudentDAO studentDAO=new StudentDAO();
+   16 	final CourseDAO courseDAO = new CourseDAO();
+   17 	
+   18 	
+   19 	public void addStudent(Student studentObj){
+   20 		studentDAO.addStudent(studentObj);
+   21 	}
+   22 	
+   23 	public Student viewStudentById(int studentid) throws InvalidStudentException{
+   24 		return studentDAO.viewStudentById(studentid);
+   25 	}
+   26 	
+   27 	public void addCourse(Course courseObj){
+   28 		courseDAO.addCourse(courseObj);
+   29 	}
+   30 	
+   31 	public List<Course> viewCourseByFees(float fees) throws InvalidCourseException {
+   32 		return courseDAO.viewCourseByFees(fees);
+   33 	}
+   34 	
+   35 	
+   36 }
+   37 
+ELearningApp/src/com/dao/CourseDAO.java
+    1 package com.dao;
+    2 
+    3 import java.util.ArrayList;
+    4 import java.util.List;
+    5 
+    6 import com.exception.InvalidCourseException;
+    7 
+    8 import com.model.Course;
+    9 
+   10 public class CourseDAO {
+   11 	
+   12 	List<Course> courseList = new ArrayList<>();
+   13 	
+   14 	public void addCourse(Course courseObj){
+   15 		courseList.add(courseObj);
+   16 	}
+   17 	
+   18 	public List<Course> viewCourseByFees(float fees) throws InvalidCourseException {
+   19 		List<Course> temp=new ArrayList<>();
+   20 		for(Course c : courseList){
+   21 			if(c.getFees()>=fees)
+   22 			{
+   23 				temp.add(c);
+   24 			}
+   25 		}
+   26 		if(temp==null) //to check of the size of the list is 0
+   27 		{
+   28 			throw new InvalidCourseException("No course with fees greater than "+fees);
+   29 		}
+   30 		else
+   31 		{
+   32 			return temp;
+   33 		}
+   34 	}
+   35 
+   36 }
+   37 
+ELearningApp/src/com/dao/RegistrationDAO.java
+    1 package com.dao;
+    2 
+    3 import java.time.LocalDate;
+    4 import java.util.ArrayList;
+    5 import java.util.List;
+    6 
+    7 import com.model.Course;
+    8 import com.model.Registration;
+    9 import com.model.Student;
+   10 
+   11 public class RegistrationDAO {
+   12 	
+   13 	List<Registration> regList = new ArrayList<>();
+   14 	
+   15 	public void registerStudentToCourse(Student student,Course course,LocalDate dor){
+   16 		
+   17 		Registration r = new Registration(student,course,dor,'X');
+   18 		
+   19 		int count=0;
+   20 		
+   21 		
+   22 		for(Registration reg : regList)
+   23 		{
+   24 			if(reg.getCourseObj().courseId==course.courseId)
+   25 			{
+   26 				count++;
+   27 			}
+   28 		}
+   29 		if(course.getMaxstrengthpermitted()>count)
+   30 		{
+   31 			regList.add(r);		
+   32 		}
+   33 	}
+   34 
+   35 }
+   36 
+ELearningApp/src/com/dao/StudentDAO.java
+    1 package com.dao;
+    2 
+    3 import java.util.ArrayList;
+    4 import java.util.List;
+    5 
+    6 import com.exception.InvalidStudentException;
+    7 import com.model.Student;
+    8 
+    9 public class StudentDAO {
+   10 
+   11 	List<Student> studentList = new ArrayList<>();
+   12 	
+   13 	public void addStudent(Student studentObj){
+   14 		studentList.add(studentObj);
+   15 	}
+   16 	
+   17 	public Student viewStudentById(int studentid) throws InvalidStudentException{
+   18 		if(studentList.isEmpty())
+   19 		{
+   20 			throw new InvalidStudentException("Student list is empty");
+   21 		}
+   22 		else
+   23 		{
+   24 			;
+   25 			
+   26 			for(Student s : studentList)
+   27 			{
+   28 				if(s.getStudentId().equals(studentid))
+   29 				{
+   30 					return s;
+   31 				}
+   32 			}
+   33 		}
+   34 		return null;
+   35 	}
+   36 }
+   37 
+ELearningApp/src/com/exception/InvalidCourseException.java
+    1 package com.exception;
+    2 
+    3 public class InvalidCourseException extends Exception {
+    4 	
+    5 	public InvalidCourseException(String msg){
+    6 		super(msg);
+    7 	}
+    8 
+    9 }
+   10 
+ELearningApp/src/com/exception/InvalidStudentException.java
+    1 package com.exception;
+    2 
+    3 public class InvalidStudentException extends Exception {
+    4 	
+    5 	public InvalidStudentException(String msg){
+    6 		super(msg);
+    7 	}
+    8 
+    9 }
+   10 
+ELearningApp/src/com/model/Course.java
+    1 package com.model;
+    2 
+    3 public class Course {
+    4 
+    5 	public int courseId;
+    6 	private String courseName;
+    7 	private float fees;
+    8 	private int duration = 10;
+    9 	private String trainerIncharge;
+   10 	static final int MAXSTRENGTHPERMITTED = 100;
+   11 	static String academyName="Akshara Acadey";
+   12 	
+   13 	public int getCourseId() {
+   14 		return courseId;
+   15 	}
+   16 	public void setCourseId(int courseId) {
+   17 		this.courseId = courseId;
+   18 	}
+   19 	public String getCourseName() {
+   20 		return courseName;
+   21 	}
+   22 	public void setCourseName(String courseName) {
+   23 		this.courseName = courseName;
+   24 	}
+   25 	public float getFees() {
+   26 		return fees;
+   27 	}
+   28 	public void setFees(float fees) {
+   29 		this.fees = fees;
+   30 	}
+   31 	public int getDuration() {
+   32 		return duration;
+   33 	}
+   34 	public void setDuration(int duration) {
+   35 		this.duration = duration;
+   36 	}
+   37 	public String getTrainerIncharge() {
+   38 		return trainerIncharge;
+   39 	}
+   40 	public void setTrainerIncharge(String trainerIncharge) {
+   41 		this.trainerIncharge = trainerIncharge;
+   42 	}
+   43 	public static int getMaxstrengthpermitted() {
+   44 		return MAXSTRENGTHPERMITTED;
+   45 	}
+   46 
+   47 }
+   48 
+ELearningApp/src/com/model/Registration.java
+    1 package com.model;
+    2 
+    3 import java.time.LocalDate;
+    4 
+    5 public class Registration {
+    6 
+    7 	private Student studentObj;
+    8 	private Course courseObj;
+    9 	private LocalDate dateOfRegistration;
+   10 	private char grade;
+   11 	
+   12 
+   13 	public Registration(Student studentObj, Course courseObj, LocalDate dateOfRegistration, char grade) {
+   14 		this.studentObj = studentObj;
+   15 		this.courseObj = courseObj;
+   16 		this.dateOfRegistration = dateOfRegistration;
+   17 		this.grade = grade;
+   18 	}
+   19 
+   20 	public Student getStudentObj() {
+   21 		return studentObj;
+   22 	}
+   23 
+   24 	public void setStudentObj(Student studentObj) {
+   25 		this.studentObj = studentObj;
+   26 	}
+   27 
+   28 	public Course getCourseObj() {
+   29 		return courseObj;
+   30 	}
+   31 
+   32 	public void setCourseObj(Course courseObj) {
+   33 		this.courseObj = courseObj;
+   34 	}
+   35 
+   36 	public LocalDate getDateOfRegistration() {
+   37 		return dateOfRegistration;
+   38 	}
+   39 
+   40 	public void setDateOfRegistration(LocalDate dateOfRegistration) {
+   41 		this.dateOfRegistration = dateOfRegistration;
+   42 	}
+   43 
+   44 	public char getGrade() {
+   45 		return grade;
+   46 	}
+   47 
+   48 	public void setGrade(char grade) {
+   49 		this.grade = grade;
+   50 	}
+   51 	
+   52 	public void calculateGrade(int mark){
+   53 		
+   54 		if(mark >= 90)
+   55 		{
+   56 			setGrade('O');
+   57 		}
+   58 		else if(mark >= 70)
+   59 		{
+   60 			setGrade('A');
+   61 		}
+   62 		else
+   63 		{
+   64 			setGrade('B');	
+   65 		}
+   66 	}
+   67 }
+   68 
+ELearningApp/src/com/model/Student.java
+    1 package com.model;
+    2 
+    3 public class Student {
+    4 	
+    5 	private String studentId;
+    6 	private String studentName;
+    7 	private String phoneNumber;
+    8 	private String emailId;
+    9 	
+   10 	public Student(String studentId, String studentName, String phoneNumber, String emailId) {		
+   11 		this.studentId = studentId;
+   12 		this.studentName = studentName;
+   13 		this.phoneNumber = phoneNumber;
+   14 		this.emailId = emailId;
+   15 	}
+   16 
+   17 	public String getStudentId() {
+   18 		return studentId;
+   19 	}
+   20 
+   21 	public void setStudentId(String studentId) {
+   22 		this.studentId = studentId;
+   23 	}
+   24 
+   25 	public String getStudentName() {
+   26 		return studentName;
+   27 	}
+   28 
+   29 	public void setStudentName(String studentName) {
+   30 		this.studentName = studentName;
+   31 	}
+   32 
+   33 	public String getPhoneNumber() {
+   34 		return phoneNumber;
+   35 	}
+   36 
+   37 	public void setPhoneNumber(String phoneNumber) {
+   38 		this.phoneNumber = phoneNumber;
+   39 	}
+   40 
+   41 	public String getEmailId() {
+   42 		return emailId;
+   43 	}
+   44 
+   45 	public void setEmailId(String emailId) {
+   46 		this.emailId = emailId;
+   47 	}
+   48 	
+   49 }
+   50 
+Grade
+Reviewed on Tuesday, 4 May 2021, 2:25 AM by Automatic grade
+Grade 100 / 100
+Assessment report
+[-]Grading and Feedback
+Good Programming Practice - 100.0 / 100(Success)

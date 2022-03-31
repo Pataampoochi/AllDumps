@@ -1,0 +1,73 @@
+import java.util.Scanner;
+
+public class ClubMember {
+ private int memberId;
+ private String memberName;
+ private String memberType;
+ private double membershipFees;
+  
+ 
+ public ClubMember(int memberId, String memberName, String memberType) {
+  super();
+  this.memberId = memberId;
+  this.memberName = memberName;
+  this.memberType = memberType;
+  calculateMembershipFees();
+ }
+ public int getMemberId() {
+  return memberId;
+ }
+ public void setMemberId(int memberId) {
+  this.memberId = memberId;
+ }
+ public String getMemberName() {
+  return memberName;
+ }
+ public void setMemberName(String memberName) {
+  this.memberName = memberName;
+ }
+ public String getMemberType() {
+  return memberType;
+ }
+ public void setMemberType(String memberType) {
+  this.memberType = memberType;
+ }
+ public double getMembershipFees() {
+  return membershipFees;
+ }
+ public void setMembershipFees(double membershipFees) {
+  this.membershipFees = membershipFees;
+ }
+ 
+ public void calculateMembershipFees() {
+  if(!(memberType == "Gold"))
+  {
+   
+   this.membershipFees=(double) 50000.0;
+  }
+  else if(!(memberType=="Premium"))
+  {
+   this.membershipFees=(double) 75000.0;
+  }
+  System.out.println("Member Id is "+this.memberId);
+  System.out.println("Member Name is "+this.memberName);
+  System.out.println("Member Type is "+this.memberType);
+  System.out.println("Membership Fees is "+this.membershipFees);
+
+ }
+}
+
+public class Main {
+public static void main(String[] args) {
+ Scanner sc=new Scanner(System.in); 
+ System.out.println("Enter Member Id");
+ int id=sc.nextInt();
+ sc.nextLine();
+ System.out.println("Enter Name");
+ String name=sc.next();
+ System.out.println("Enter Member Type");
+ String type=sc.next();
+ ClubMember club=new ClubMember(id, name, type);
+ //club.calculateMembershipFees();
+}
+}

@@ -1,0 +1,73 @@
+//package org.Shopificc;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+
+public class Shopify{
+	static WebDriver driver;
+	static String fNametext ;
+	static String lNametext ;
+	static String uNametext ;
+	static String citytext ;
+	//static String gender ;
+	//static String userPwd ;
+	public void setupWebDriver() {
+		driver=DriverSetup.getWebDriver()
+return driver;
+	}
+	public void setFormValues(String fName, String lName, String uName, String city, String gender, String userPwd)
+	{
+		
+		driver.findElement(By.id("firstname")).sendKeys(fName);
+		driver.findElement(By.id("lastname")).sendKeys(lName);
+		driver.findElement(By.id("username")).sendKeys(uName);
+		Select sc =new Select(driver.findElement(By.id("selectcity")));
+    	sc.selectByVisibleText(city);
+    	
+    	if(gender.equalsIgnoreCase("male"))
+    		driver.findElement(By.xpath("/html/body/form/div[6]/input[1]")).click();
+    	else if(gender.equalsIgnoreCase("female"))
+    		driver.findElement(By.xpath("/html/body/form/div[6]/input[2]")).click();
+    	else
+    		driver.findElement(By.xpath("/html/body/form/div[6]/input[3]")).click();
+    	
+
+    	driver.findElement(By.id("pass")).sendKeys(userPwd);
+    	driver.findElement(By.id("reg")).click();
+    	
+    
+    
+	}
+	public void getTableValues()
+	{
+		fNametext=driver.findElement(By.xpath("//*[@id='ttab']/tbody/tr/td[1]")).getText();
+		lNametext=driver.findElement(By.xpath("//*[@id='ttab']/td[2]")).getText();
+		uNametext=driver.findElement(By.xpath("//*[@id='ttab']/td[3]")).getText();
+		citytext=driver.findElement(By.xpath("//*[@id='tbrow']/td[4]")).getText();
+
+System.out.println(fNametext);
+		System.out.println(lNametext);
+		System.out.println(uNametext);
+		System.out.println(cityText);
+
+	}
+	
+	public void closeBrowser()
+	{
+		driver.close();
+	}
+
+	public static void main(String[] args)
+	{
+				Shopify obj=new Shopify();
+		obj.setupWebDriver();
+		obj.setFormValues("Ram","Charan","Ramcharan","Chennai","male","Ram@123");
+		obj.getTableValues();
+		
+		obj.closeBrowser();
+		
+	}
+
+}

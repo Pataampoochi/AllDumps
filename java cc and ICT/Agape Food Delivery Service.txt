@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <span>Agape Food Delivery Service - Partner Invite</span>
+    <form>
+      <div style="display: flex; flex-direction: row">
+        <div
+          style="
+            border-color: black;
+            border-style: solid;
+            border-width: 2px;
+            border-radius: 3px;
+            width: 60%;
+            /* height: 80%; */
+            margin: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+          "
+        >
+          <input
+            type="text"
+            id="restaurantName"
+            placeholder="Restaurant Name*"
+          />
+          <div>
+            <input
+              type="text"
+              id="pin"
+              placeholder="Pin (Primary Location)*"
+              style="width: 49%"
+            />
+            <input
+              type="text"
+              id="city"
+              placeholder="City*"
+              style="width: 49%; margin-left: 4px"
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              id="onam"
+              placeholder="Restaurant Owner*"
+              style="width: 49%"
+            />
+            <input
+              type="text"
+              id="phno"
+              placeholder="Phone Number"
+              style="width: 49%; margin-left: 4px"
+            />
+          </div>
+          <input type="text" id="email" placeholder="Email*" />
+          <input type="text" id="link" placeholder="Website Link" />
+          <div>
+            <input
+              type="text"
+              id=""
+              placeholder="Number of outlets*"
+              style="width: 49%"
+            />
+            <input
+              type="text"
+              id="primaryArea"
+              placeholder="Primary Area of outlet*"
+              style="width: 49%; margin-left: 4px"
+            />
+          </div>
+          <div>
+            <input
+              type="text"
+              id="cost"
+              placeholder="Cost for two*"
+              style="width: 49%"
+            />
+            <input
+              type="text"
+              id="type"
+              placeholder="Establishment indicator*"
+              style="width: 49%; margin-left: 4px"
+            />
+          </div>
+          <div>
+            <label>Cusine type: </label>
+            <input
+              type="checkbox"
+              id="indianVeg"
+              name="indianVeg"
+              value="Indian-veg"
+            />
+            <label for="indianVeg">Indian-veg</label>
+            <input
+              type="checkbox"
+              id="indianVegNonVeg"
+              name="indianVegNonVeg"
+              value="Indian-veg and Non-veg"
+            />
+            <label for="indianVegNonVeg">Indian-veg and Non-veg</label>
+            <input
+              type="checkbox"
+              id="chinese"
+              name="chinese"
+              value="Chinese"
+            />
+            <label for="chinese">Chinese</label>
+            <input
+              type="checkbox"
+              id="continental"
+              name="continental"
+              value="Continental"
+            />
+            <label for="continental">Continental</label>
+          </div>
+          <div style="display: flex; flex-direction: row">
+            <div>
+              <label>Licens(Jpeg/PDF)*</label>
+              <input
+                type="file"
+                name="Choose File"
+                value="Choose File"
+                placeholder="Choose File"
+              />
+            </div>
+            <div>
+              <label>Licens(Jpeg/PDF)*</label>
+              <input
+                type="file"
+                name="Choose File"
+                value="Choose File"
+                placeholder="Choose File"
+              />
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: row">
+            <div>
+              <label>Licens(Jpeg/PDF)*</label>
+              <input
+                type="file"
+                name="Choose File"
+                value="Choose File"
+                placeholder="Choose File"
+              />
+            </div>
+            <div>
+              <label>Licens(Jpeg/PDF)*</label>
+              <input
+                type="file"
+                name="Choose File"
+                value="Choose File"
+                placeholder="Choose File"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <input type="checkbox" id="terms" name="terms" value="terms" />
+        <a href="/"><label for="terms">I agree to terms of service</label></a>
+      </div>
+      <input
+        type="submit"
+        value="SUBMIT"
+        style="
+          margin-top: 5px;
+          background-color: red;
+          color: white;
+          border-radius: 5px;
+        "
+      />
+    </form>
+    <style>
+      input {
+        margin-bottom: 5px;
+      }
+
+      span {
+        margin-left: 20px;
+        background-color: blue;
+        color: white;
+        width: 60%;
+        display: block;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      ::placeholder {
+        color: red;
+      }
+    </style>
+  </body>
+</html>

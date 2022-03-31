@@ -1,0 +1,52 @@
+import java.util.*;
+
+public class UserInterface {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+	    
+	    System.out.println("1. Savings Account");
+	    System.out.println("2. Current Account");
+	    System.out.println("Enter your choice:");
+	    
+	    int choice = sc.nextInt();
+	    
+	    System.out.println("Enter the Account number");
+	    sc.nextLine();
+	    String acc = sc.nextLine();
+	    
+	    System.out.println("Enter the Customer Name");
+	    
+	    String custName = sc.nextLine();
+	    
+	    System.out.println("Enter the Balance amount");
+	    double balance = sc.nextDouble();
+	    
+	    System.out.println("Enter the number of years");
+	    int noOfYears = sc.nextInt();
+	    
+	    double mCharges = 0;
+	    
+	    if(choice == 1){
+	      SavingsAccount sa = new SavingsAccount(custName, acc, balance);
+	      mCharges = sa.calculateMaintenanceCharge(noOfYears);
+	    }
+	    
+	    if(choice == 2){
+	      CurrentAccount ca = new CurrentAccount(custName, acc, balance);
+	      mCharges = ca.calculateMaintenanceCharge(noOfYears);
+	    }
+	    
+	    
+	    System.out.println("Customer Name " +custName);
+	    System.out.println("Account Number " +acc);
+	    System.out.println("Account Balance " +balance);
+	    
+	    
+	    
+	    System.out.println("Maintenance Charge for Current Account is Rs " +mCharges);
+
+	}
+
+}

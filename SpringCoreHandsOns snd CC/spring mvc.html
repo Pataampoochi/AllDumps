@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<pre>
+
+    <h1 style="color: yellowgreen;font-size: 48px;">DeliveryAgency</h1>
+    <h2>controller</h2>
+     package com.controller;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.exception.NoOrdersFoundException;
+import com.model.Order;
+import com.service.AgencyService;
+
+//use appropriate annotation to configure AgencyController as Controller
+@Controller
+public class AgencyController {
+	
+	//Use appropriate annotation
+	@Autowired
+	private AgencyService service;
+	
+	@RequestMapping(value = "/searchPage", method = RequestMethod.GET)
+	public String searchPage(@ModelAttribute("orderBean") Order orderBean) {
+		return "searchPage";
+	}
+	
+	
+	//invoke the service class - searchDeliveryOrders method. 
+	@RequestMapping(value = "/orderList", method = RequestMethod.POST)
+	public String searchDeliveryOrders(@ModelAttribute("orderBean") @Valid Order orderBean, BindingResult result,
+			ModelMap model) throws NoOrdersFoundException  {		
+		//fill the code
+		if (result.hasErrors()) {
+			return "searchPage";			
+		} else {
+			List<Order> ordersFound = service.searchDeliveryOrders(orderBean);
+			if(ordersFound.isEmpty()) {
+				throw new NoOrdersFoundException("No orders found for this search criteria");
+			} else {
+				model.addAttribute("orders", ordersFound);
+				return "deliveryListPage";
+			}
+			
+		}
+	}
+	
+	@ExceptionHandler(NoOrdersFoundException.class)
+	public ModelAndView exceptionHandler(Exception e) {
+		ModelAndView mav = new ModelAndView();
+	    mav.addObject("exception", e);
+	    mav.setViewName("exceptionPage");
+	    return mav;
+	}
+}
+
+<h2>Example</h2>
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class DeliveryAgencyApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DeliveryAgencyApplication.class, args);
+	}
+
+}
+
+<h2>Exception</h2>
+package com.exception;
+
+public class NoOrdersFoundException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public NoOrdersFoundException(String msg) {
+		super(msg);
+	}
+
+}
+
+
+
+<h2>model</h2>
+
+package com.model;
+
+import javax.validation.constraints.NotEmpty;
+
+import org.springframework.stereotype.Component;
+
+//pojo class with required attributes,getters and setters
+@Component
+public class Order {
+	private String orderId;
+	private String orderFrom;
+	private String deliveryTo;
+	// fill the code
+	
+	@NotEmpty(message = "Delivery Date should be Mandatory")
+	private String deliveryDate;
+	
+	private String deliveryStatus;
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	public String getOrderFrom() {
+		return orderFrom;
+	}
+	public void setOrderFrom(String orderFrom) {
+		this.orderFrom = orderFrom;
+	}
+	public String getDeliveryTo() {
+		return deliveryTo;
+	}
+	public void setDeliveryTo(String deliveryTo) {
+		this.deliveryTo = deliveryTo;
+	}
+	public String getDeliveryDate() {
+		return deliveryDate;
+	}
+	public void setDeliveryDate(String deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+
+	public String getDeliveryStatus() {
+		return deliveryStatus;
+	}
+	public void setDeliveryStatus(String deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
+	}
+	public Order(String orderId, String orderFrom, String deliveryTo, String deliveryDate, String deliveryStatus) {
+		super();
+		this.orderId = orderId;
+		this.orderFrom = orderFrom;
+		this.deliveryTo = deliveryTo;
+		this.deliveryDate = deliveryDate;
+		this.deliveryStatus = deliveryStatus;
+	}
+	
+	public Order()	{}
+	
+}
+
+<h2>Service</h2>
+package com.service;
+
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.model.Order;
+
+//use appropriate annotation to configure AgencyService as a Service
+@Service
+public class AgencyService {
+	ArrayList<Order> list = new ArrayList<Order>();
+	
+	//search orders and return the ArrayList<Order>
+	public ArrayList<Order> searchDeliveryOrders(Order orderBean) {
+		ArrayList<Order> foundOrders = new ArrayList<>();
+		for(Order order : list) {
+			if(order.getDeliveryDate().equals(orderBean.getDeliveryDate()) && order.getDeliveryStatus().equals(orderBean.getDeliveryStatus())) {
+				foundOrders.add(order);
+			}
+		}
+		return foundOrders;
+	}
+	
+	public AgencyService() {
+		 addOrders();
+	}
+
+	public  void addOrders(){		// don't change this code
+		list.add(new Order("DF1234233","AJIO trends","#412, Shipitha cascade, Ganapathy, PIN-641001","10/02/2021","pending"));
+		list.add(new Order("FGF7788","Amazon india","#12, shardhalotus, Ram Nagar, PIN-641001", "02/02/2021","pending"));
+		list.add(new Order("AF5546","Mynthra","#12, Anandha nilayam,Kuniamuthur, PIN-641001","08/02/2021","pending"));
+		list.add(new Order("DF5543","Flip cart","#201, Shipitha cascade, Saravanampatti, PIN-641001","10/02/2021","delivered"));
+	
+		list.add(new Order("DX17788","AJIO trends","#34/45, RV Homes, 5th cross, Anssari street, PIN-600001","01/02/2021","pending"));
+		list.add(new Order("RF55346","Amazon india","#212/4, 10th cross, T-nagar, PIN-60008","03/02/2021","delivered"));
+		list.add(new Order("DF88994","Mynthra","#556/4, 5th cross, Thambaram, PIN-60010","12/02/2021","pending"));
+		list.add(new Order("FT51122","AJIO trends","#556/4,Nila paradise, Thambaram, PIN-60010","03/02/2021","delivered"));
+		list.add(new Order("LK44338","Flip cart","#412/4, 10th cross, Velacheri, PIN-60009","03/02/2021","delivered"));
+		
+		list.add(new Order("JK99008","Amazon india","#45, 12Th main , GM Palya, PIN-560075","03/02/2021","pending"));
+		list.add(new Order("MJ99765","Flip cart","#67/2, 3rd cross , Indra nagar, PIN-560077","08/02/2021","delivered"));
+		list.add(new Order("NK66754","Mynthra","#302, Sakthi enclave ,1st main , Malleshpalya, PIN-560075","08/02/2021","delivered"));
+		                   
+		
+	}	 	  
+}
+	 	  	    	    		        	 	
+<h2>Resources</h2>
+#Do not edit the key server.port.Port number can be changed
+#include other needed configurations
+server.port=8088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+
+<h2>Delivery list page</h2>
+<%@page isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<html>
+<body bgcolor="lavender">
+	<h1>
+		<center>Delivery Agency</center>
+	</h1>
+
+	<table>
+		<tr>
+			<td>OrderId</td>
+			<td>Order From</td>
+			<td>Delivery To</td>
+			<td>Delivery Date</td>
+			<td>Status</td>
+		</tr>
+		<c:forEach items="${orders}" var="order">
+			<tr>
+				<td>${order.orderId}</td>
+				<td>${order.orderFrom}</td>
+				<td>${order.deliveryTo}</td>
+				<td>${order.deliveryDate}</td>
+				<td>${order.deliveryStatus}</td>
+			</tr>
+		</c:forEach>
+	</table>
+
+
+</body>
+</html>
+
+<h2>Exception page</h2>
+<%@page isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<html>
+<body bgcolor="lavender">
+	<h1>
+		<center>Delivery Agency</center>
+	</h1>
+	<center>
+		<h3>${exception.message}</h3>
+		<a href="/searchPage">
+			<button>Go to Search</button>
+		</a>
+	</center>
+</body>
+</html>
+
+<h2>Search page</h2>
+
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color: lavender">
+	<h1>
+		<center>Delivery Agency</center>
+	</h1>
+	<center>
+		<sf:form action="orderList" name="form" modelAttribute="orderBean"
+			method="POST">
+
+			<fieldset>
+				<label for='deliveryDate'>Search Delivery Date</label>
+				<sf:input path="deliveryDate" id="deliveryDate" name="deliveryDate"
+					placeholder="dd/mm/yyyy" />
+				<sf:errors path="deliveryDate" />
+				<br /> 
+				<label for='deliveryStatus'>Select Delivery Status</label>
+				<sf:select path="deliveryStatus" id="deliveryStatus" name="deliveryStatus">
+					<sf:option label="delivered" value="delivered"/>
+					<sf:option label="pending" value="pending"/>
+				</sf:select>
+			</fieldset>
+			<input type="submit" id="submit" value="Search" name="submit" />
+		</sf:form>
+	</center>
+</body>
+</html>
+
+<h1 style="color: yellowgreen; font-size: 48px;">Digital Home brokering</h1>
+
+<h2>Broker Controller</h2>
+
+package com.controller;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.model.Home;
+import com.service.BrokerService;
+
+//use appropriate annotation to configure BrokerController as Controller
+@Controller
+public class BrokerController {
+	
+	//Use appropriate annotation above this property
+	@Autowired
+	private BrokerService service;
+	
+	@RequestMapping(value = "/searchPage", method = RequestMethod.GET)
+	public String searchPage(@ModelAttribute("homeBean") Home homeBean)	{		
+		return "searchPage";
+	}
+	
+	//invoke the service class - searchHome method.
+	@RequestMapping(value = "/homeList", method = RequestMethod.POST)
+	public String searchHome(@ModelAttribute("homeBean") @Valid Home homeBean, BindingResult result,
+			ModelMap model) {
+		if (result.hasErrors()) {
+			return "searchPage";
+		}
+		model.addAttribute("homes", service.searchHome(homeBean));
+		return "homeListPage";
+	}
+}
+
+
+<h2>Demo</h2>
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class DigitalHomeBrokerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DigitalHomeBrokerApplication.class, args);
+	}
+
+}
+
+
+<h2>Home</h2>
+package com.model;
+
+import javax.validation.constraints.Min;
+
+import org.springframework.stereotype.Component;
+
+//pojo class with required attributes,getters and setters 
+@Component
+public class Home {
+
+	private String location;
+	private String address;
+	private String contactNumber;
+	private String bhkType;
+	private String contactPerson;
+	@Min(value = 5000, message = "Minimum rent should be 5000")
+	private double rent;
+	public double getRent() {
+		return rent;
+	}
+	public void setRent(double rent) {
+		this.rent = rent;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getContactNumber() {
+		return contactNumber;
+	}
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+	public String getBhkType() {
+		return bhkType;
+	}
+	public void setBhkType(String bhkType) {
+		this.bhkType = bhkType;
+	}
+	public String getContactPerson() {
+		return contactPerson;
+	}
+	public void setContactPerson(String contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+	
+	public Home(String location, String address, String contactNumber, String bhkType, String contactPerson,double rent) {
+		super();
+		this.location = location;
+		this.address = address;
+		this.contactNumber = contactNumber;
+		this.bhkType = bhkType;
+		this.contactPerson = contactPerson;
+		this.rent=rent;
+	}
+	public Home()
+	{}
+	
+}
+
+<h2>Service</h2>
+package com.service;
+
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.model.Home;
+
+//use appropriate annotation to configure BrokerService as a Service
+@Service
+public class BrokerService {
+
+	ArrayList<Home> list = new ArrayList<Home>();
+
+	// search homes/apartments from the list and return it as a ArrayList
+	public ArrayList<Home> searchHome(Home homeBean) {
+		ArrayList<Home> resultList = new ArrayList<Home>();
+		for (Home home : list) {
+			if (home.getLocation().equalsIgnoreCase(homeBean.getLocation())
+					&& home.getBhkType().equalsIgnoreCase(homeBean.getBhkType())
+					&& home.getRent() == homeBean.getRent()) {
+				resultList.add(home);
+			}
+		}
+		return resultList;
+
+	}
+
+	public BrokerService() {
+		addHomes();
+	}
+
+	// Dont modify this code
+	public ArrayList<Home> addHomes() {
+		list.add(new Home("Coimbatore", "#412, Shipitha cascade, Ganapathy, PIN-641001", "9917678456", "1BHK",
+				"Malavika", 8000));
+		list.add(new Home("Coimbatore", "#12, shardhalotus, Ram Nagar, PIN-641001", "9917100989", "2BHK", "Karthik",
+				12000));
+		list.add(new Home("Coimbatore", "#12, Anandha nilayam,Kuniamuthur, PIN-641001", "9917100989", "2BHK", "Karthik",
+				12000));
+		list.add(new Home("Coimbatore", "#201, Shipitha cascade, Saravanampatti, PIN-641001", "9917123456", "3BHK",
+				"Sowparnika", 17000));
+
+		list.add(new Home("Chennai", "#34/45, RV Homes, 5th cross, Anssari street, PIN-600001", "7788900989", "1BHK",
+				"Mukunthan", 6000));
+		list.add(new Home("Chennai", "#212/4, 10th cross, T-nagar, PIN-60008", "9917100989", "2BHK", "Annesh", 14000));
+		list.add(new Home("Chennai", "#556/4, 5th cross, Thambaram, PIN-60010", "9917100989", "2BHK", "Jisha", 14000));
+		list.add(new Home("Chennai", "#556/4,Nila paradise, Thambaram, PIN-60010", "9917100989", "2BHK", "Jisha",
+				14000));
+		list.add(
+				new Home("Chennai", "#412/4, 10th cross, Velacheri, PIN-60009", "9917156989", "3BHK", "Rakesh", 18000));
+
+		list.add(
+				new Home("Bangalore", "#45, 12Th main , GM Palya, PIN-560075", "9917122119", "1BHK", "Senthil", 11000));
+		list.add(new Home("Bangalore", "#67/2, 3rd cross , Indra nagar, PIN-560077", "9944550989", "2BHK", "RamKumar",
+				17000));
+		list.add(new Home("Bangalore", "#302, Sakthi enclave ,1st main , Malleshpalya, PIN-560075", "9917668889",
+				"3BHK", "Saradha", 25000));
+		return list;
+
+	}
+}
+
+<h2>Resources</h2>
+#Do not edit the key server.port.Port number can be changed
+#include other needed configurations
+server.port=8088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+
+
+<h2>homeListPage</h2>
+<%@page isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+<html>
+<body bgcolor="lavender">
+	<h1>
+		<center>Digital Home Broker</center>
+	</h1>
+	<h2>
+		<center>Search homes|Apartments !!!</center>
+	</h2>
+	
+	<c:if test="${fn:length(homes) == 0}">
+		<h2>
+			<center>No home/Apartment found for this search</center>
+		</h2>
+	</c:if>
+	
+	<c:if test="${fn:length(homes) > 0}">
+	<table>
+		<thead>
+			<tr>
+				<td>Location</td>
+				<td>BhkType</td>
+				<td>Address</td>
+				<td>ContactPerson</td>
+				<td>ContactNumber</td>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${homes}" var="home">
+				<tr>
+					<td>${home.location}</td>
+					<td>${home.bhkType}</td>
+					<td>${home.address}</td>
+					<td>${home.contactPerson}</td>
+					<td>${home.contactNumber}</td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+	</c:if>
+
+</body>
+</html>
+
+<h2>Search Page</h2>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color: lavender">
+	<h1>
+		<center>Digital Home Broker</center>
+	</h1>
+	<h2>
+		<center>Search homes|Apartments !!!</center>
+	</h2>
+	<center>
+		<table>
+			<form:form action="homeList" modelAttribute="homeBean" method="post">
+				<tr>
+					<td><form:label path="location">Search location</form:label></td>
+					<td><form:input path="location" id="location" name="location" />
+					</td>
+				</tr>
+				<tr>
+					<td><form:label path="bhkType">Search BHK Type</form:label></td>
+					<td><form:input path="bhkType" id="bhkType" name="bhkType" />
+					</td>
+				</tr>
+				<tr>
+					<td><form:label path="rent">Preferred Rent</form:label></td>
+					<td><form:input path="rent" id="rent" name="rent" />
+					<form:errors path="rent" />
+					</td>
+				</tr>
+				<tr>
+					<td><input type="submit" id="submit" name="submit" value="Search" /></td>
+				</tr>
+			</form:form>
+		</table>
+	</center>
+
+
+</body>
+</html>
+<hr>
+
+<h1 style="color: greenyellow; font-size: 48px;">Digital Home brokering</h1>
+
+<h2>BrokerController</h2>
+package com.controller;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.model.Home;
+import com.service.BrokerService;
+
+//use appropriate annotation to configure BrokerController as Controller
+@Controller
+public class BrokerController {
+	
+	//Use appropriate annotation above this property
+	@Autowired
+	private BrokerService service;
+	
+	@RequestMapping(value = "/searchPage", method = RequestMethod.GET)
+	public String searchPage(@ModelAttribute("homeBean") Home homeBean)	{		
+		return "searchPage";
+	}
+	
+	//invoke the service class - searchHome method.
+	@RequestMapping(value = "/homeList", method = RequestMethod.POST)
+	public String searchHome(@ModelAttribute("homeBean") @Valid Home homeBean, BindingResult result,
+			ModelMap model) {
+		if (result.hasErrors()) {
+			return "searchPage";
+		}
+		model.addAttribute("homes", service.searchHome(homeBean));
+		return "homeListPage";
+	}
+}
+
+
+<h2>Demo</h2>
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class DigitalHomeBrokerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(DigitalHomeBrokerApplication.class, args);
+	}
+
+}
+
+<h2>Home.java</h2>
+package com.model;
+
+import javax.validation.constraints.Min;
+
+import org.springframework.stereotype.Component;
+
+//pojo class with required attributes,getters and setters 
+@Component
+public class Home {
+
+	private String location;
+	private String address;
+	private String contactNumber;
+	private String bhkType;
+	private String contactPerson;
+	@Min(value = 5000, message = "Minimum rent should be 5000")
+	private double rent;
+	public double getRent() {
+		return rent;
+	}
+	public void setRent(double rent) {
+		this.rent = rent;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getContactNumber() {
+		return contactNumber;
+	}
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+	public String getBhkType() {
+		return bhkType;
+	}
+	public void setBhkType(String bhkType) {
+		this.bhkType = bhkType;
+	}
+	public String getContactPerson() {
+		return contactPerson;
+	}
+	public void setContactPerson(String contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+	
+	public Home(String location, String address, String contactNumber, String bhkType, String contactPerson,double rent) {
+		super();
+		this.location = location;
+		this.address = address;
+		this.contactNumber = contactNumber;
+		this.bhkType = bhkType;
+		this.contactPerson = contactPerson;
+		this.rent=rent;
+	}
+	public Home()
+	{}
+	
+}
+<h2>Services</h2>
+package com.service;
+
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.model.Home;
+
+//use appropriate annotation to configure BrokerService as a Service
+@Service
+public class BrokerService {
+
+	ArrayList<Home> list = new ArrayList<Home>();
+
+	// search homes/apartments from the list and return it as a ArrayList
+	public ArrayList<Home> searchHome(Home homeBean) {
+		ArrayList<Home> resultList = new ArrayList<Home>();
+		for (Home home : list) {
+			if (home.getLocation().equalsIgnoreCase(homeBean.getLocation())
+					&& home.getBhkType().equalsIgnoreCase(homeBean.getBhkType())
+					&& home.getRent() == homeBean.getRent()) {
+				resultList.add(home);
+			}
+		}
+		return resultList;
+
+	}
+
+	public BrokerService() {
+		addHomes();
+	}
+
+	// Dont modify this code
+	public ArrayList<Home> addHomes() {
+		list.add(new Home("Coimbatore", "#412, Shipitha cascade, Ganapathy, PIN-641001", "9917678456", "1BHK",
+				"Malavika", 8000));
+		list.add(new Home("Coimbatore", "#12, shardhalotus, Ram Nagar, PIN-641001", "9917100989", "2BHK", "Karthik",
+				12000));
+		list.add(new Home("Coimbatore", "#12, Anandha nilayam,Kuniamuthur, PIN-641001", "9917100989", "2BHK", "Karthik",
+				12000));
+		list.add(new Home("Coimbatore", "#201, Shipitha cascade, Saravanampatti, PIN-641001", "9917123456", "3BHK",
+				"Sowparnika", 17000));
+
+		list.add(new Home("Chennai", "#34/45, RV Homes, 5th cross, Anssari street, PIN-600001", "7788900989", "1BHK",
+				"Mukunthan", 6000));
+		list.add(new Home("Chennai", "#212/4, 10th cross, T-nagar, PIN-60008", "9917100989", "2BHK", "Annesh", 14000));
+		list.add(new Home("Chennai", "#556/4, 5th cross, Thambaram, PIN-60010", "9917100989", "2BHK", "Jisha", 14000));
+		list.add(new Home("Chennai", "#556/4,Nila paradise, Thambaram, PIN-60010", "9917100989", "2BHK", "Jisha",
+				14000));
+		list.add(
+				new Home("Chennai", "#412/4, 10th cross, Velacheri, PIN-60009", "9917156989", "3BHK", "Rakesh", 18000));
+
+		list.add(
+				new Home("Bangalore", "#45, 12Th main , GM Palya, PIN-560075", "9917122119", "1BHK", "Senthil", 11000));
+		list.add(new Home("Bangalore", "#67/2, 3rd cross , Indra nagar, PIN-560077", "9944550989", "2BHK", "RamKumar",
+				17000));
+		list.add(new Home("Bangalore", "#302, Sakthi enclave ,1st main , Malleshpalya, PIN-560075", "9917668889",
+				"3BHK", "Saradha", 25000));
+		return list;
+
+	}
+}
+
+<h2>Resources</h2>
+#Do not edit the key server.port.Port number can be changed
+#include other needed configurations
+server.port=8088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+
+<h2>Home list page</h2>
+
+<%@page isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
+<html>
+<body bgcolor="lavender">
+	<h1>
+		<center>Digital Home Broker</center>
+	</h1>
+	<h2>
+		<center>Search homes|Apartments !!!</center>
+	</h2>
+	
+	<c:if test="${fn:length(homes) == 0}">
+		<h2>
+			<center>No home/Apartment found for this search</center>
+		</h2>
+	</c:if>
+	
+	<c:if test="${fn:length(homes) > 0}">
+	<table>
+		<thead>
+			<tr>
+				<td>Location</td>
+				<td>BhkType</td>
+				<td>Address</td>
+				<td>ContactPerson</td>
+				<td>ContactNumber</td>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${homes}" var="home">
+				<tr>
+					<td>${home.location}</td>
+					<td>${home.bhkType}</td>
+					<td>${home.address}</td>
+					<td>${home.contactPerson}</td>
+					<td>${home.contactNumber}</td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+	</c:if>
+
+</body>
+</html>
+
+
+</code>
+</body>
+</html>
+
+
+<h2>SearchPage.jsp</h2>
+
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color: lavender">
+	<h1>
+		<center>Digital Home Broker</center>
+	</h1>
+	<h2>
+		<center>Search homes|Apartments !!!</center>
+	</h2>
+	<center>
+		<table>
+			<form:form action="homeList" modelAttribute="homeBean" method="post">
+				<tr>
+					<td><form:label path="location">Search location</form:label></td>
+					<td><form:input path="location" id="location" name="location" />
+					</td>
+				</tr>
+				<tr>
+					<td><form:label path="bhkType">Search BHK Type</form:label></td>
+					<td><form:input path="bhkType" id="bhkType" name="bhkType" />
+					</td>
+				</tr>
+				<tr>
+					<td><form:label path="rent">Preferred Rent</form:label></td>
+					<td><form:input path="rent" id="rent" name="rent" />
+					<form:errors path="rent" />
+					</td>
+				</tr>
+				<tr>
+					<td><input type="submit" id="submit" name="submit" value="Search" /></td>
+				</tr>
+			</form:form>
+		</table>
+	</center>
+</body>
+</html>
+
+
+<h1 style="color: yellowgreen; font-size: 48px;">Farm fresh online store</h1>
+<h2>Controller</h2>
+
+package com.controller;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+
+import com.exception.NoStockException;
+import com.model.Product;
+import com.service.ShoppingService;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+//use appropriate annotation to configure ShoppingController as Controller
+@Controller
+public class ShoppingController {
+	
+	@Autowired
+	private ShoppingService shoppingService;
+	
+	@RequestMapping(value = "/showPage", method = RequestMethod.GET)
+	public String showPage(@ModelAttribute("product")Product product) {	
+		
+		return "showPage";
+	}
+	
+	@ModelAttribute("productNames")	
+	public  List<String> populateProduct(){		
+		List<String> productNames = new ArrayList<String>();
+		           productNames.add("Apple");
+		           productNames.add("Orange");
+		           productNames.add("Grapes");
+		           productNames.add("Mango");
+		           productNames.add("JackFruit");
+		           return productNames;
+	}	 	  	    	    		        	 	
+
+	//invoke the service class - calculateCostAndUpdate method.
+	@RequestMapping(value = "/calculate", method = RequestMethod.POST)
+	public String calculateCost(@ModelAttribute("product")@Valid Product product, BindingResult result,ModelMap model) throws  NoStockException {
+		
+		if(result.hasErrors()){
+		
+			return ("showPage");
+		}
+		else{		
+			double cost=shoppingService.calculateCost(product);		
+			model.addAttribute("cost",cost);
+			model.addAttribute("costPerKg",product.getCostPerKg());
+			model.addAttribute("name",product.getProductName());
+			model.addAttribute("quantity",product.getQuantity());
+			
+		}
+		 		
+		return ("billDesk");
+	}
+	
+
+	@ExceptionHandler(NoStockException. class)
+	public ModelAndView exceptionHandler(Exception e) {
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("message", e.getMessage());
+		mav.setViewName("exceptionPage");
+		return mav;
+	}
+	
+}
+	 	  	    	    		        	 	
+<h2>Demo</h2>
+
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class FarmFreshApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(FarmFreshApplication.class, args);
+	}
+
+}
+
+
+<h2>Exception</h2>
+package com.exception;
+
+public class NoStockException extends Exception{
+	private static final long serialVersionUID = 1L;
+public NoStockException(String msg) {
+	
+	super(msg);
+}
+	
+}
+
+
+<h2>Model</h2>
+package com.model;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class Product {
+	private String productName ;	
+	@Min(value=1,message="Minimum quantity should be 1Kg")
+	private int quantity;	
+	private double costPerKg;
+	
+	
+public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+
+	public double getCostPerKg() {
+		return costPerKg;
+	}	 	  	    	    		        	 	
+
+
+	public void setCostPerKg(double costPerKg) {
+		this.costPerKg = costPerKg;
+	}
+
+
+public Product() {}
+}
+
+
+<h2>Services</h2>
+
+package com.service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.springframework.stereotype.Service;
+
+import com.exception.NoStockException;
+import com.model.Product;
+
+//use appropriate annotation to configure ElectricityService as a Service
+@Service
+public class ShoppingService {
+	
+	public double calculateCost(Product product) throws  NoStockException {
+	double totalCost=0.0;
+
+	Map<String,Integer> stock=getProductStock();
+	for (Entry<String, Integer> entry : stock.entrySet()) {  
+		if(product.getProductName().equalsIgnoreCase(entry.getKey())) {	
+			
+			if(product.getQuantity()>entry.getValue()) {
+				  throw new NoStockException("No enough stock for product "+product.getProductName());
+			}
+		}
+	} 
+	
+	if(product.getProductName().equals("Apple")) {		
+		product.setCostPerKg(250);
+	}
+	else if(product.getProductName().equals("JackFruit")) {		
+		product.setCostPerKg(75);
+	}
+	else if(product.getProductName().equals("Orange")) {		
+		product.setCostPerKg(90);
+	}	 	  	    	    		        	 	
+	else if(product.getProductName().equals("Mango")) {
+		product.setCostPerKg(60);
+	}
+	else if(product.getProductName().equals("Grapes")) {
+		product.setCostPerKg(150);
+	}
+	
+	totalCost=product.getQuantity()*product.getCostPerKg();
+
+	return totalCost;
+	}
+			
+	public  Map<String,Integer> getProductStock(){		
+		Map<String,Integer> stock = new HashMap<String,Integer>();
+		stock.put("Apple",50);
+		stock.put("Grapes",10);
+		stock.put("Orange",30);
+		stock.put("Mango",75);
+		stock.put("JackFruit",25);
+		           return stock;
+	}	  
+}
+
+<h2>Resources</h2>
+server.port=9088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+ 
+<h2>Billdesk.jsp</h2>
+<%@page isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<html>
+<body bgcolor="lavender"> <center>
+<h2>Farm Fresh - A natural farm store!!</h2>
+					
+			<table  >			
+					<tr>
+				 <td>Product Name  <td>${name}</td>
+				 </tr>
+				 <tr>
+				  <td>Quantity  <td>${quantity}</td>
+				  </tr>
+				  <tr>
+				  <td>Cost Per Kg  <td>${costPerKg}</td>
+				  </tr>
+				  <tr>
+				  <td>Total cost Rs  <td>${cost}</td>
+				</tr>
+		</table>
+	</center>	
+	
+	</body>
+</html>
+
+
+
+<h2>ExceptionPage.jsp</h2>
+
+<%@page isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<html>
+<body bgcolor="lavender">
+
+<center> <h2>Farm Fresh - A natural farm store!!</h2>
+				<h3>
+			<%
+				if (request.getAttribute("message") != null) {
+			%>
+			<%=request.getAttribute("message")%>
+			<%
+				}
+			%>
+		</h3>
+		<div>
+		<center>	<a href="showPage"> Home</a></center>
+		</div>
+		</center>
+		
+</body>
+</html>
+
+<h2>ShowPAge.jsp</h2>
+
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+  pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<body style="background-color:lavender">
+
+<!--  Design the page as per the requirements-->
+
+<form:form method="post" action="calculate" modelAttribute="product">
+<center><h2>Farm Fresh - A natural farm store!!</h2></center>
+<table style="margin: 0px auto; margin-left: auto; margin-right:auto">
+		 <tr>              
+         <td>Select product</td>
+				<td>
+				 <form:select path="productName" id="productName">
+						<form:options items="${productNames}"/>
+					</form:select>						
+				</td>
+		 </tr>   
+         <tr> 
+		 <td>Quantity</td>
+         <td><form:input path="quantity" id="quantity"/></td>
+         <td><form:errors path="quantity"/></td>
+		 </tr>
+		
+		
+	</table> 
+	
+	<center><input type="submit" value="Calculate Cost" id="submit" name="submit"/></center>
+	
+	<br>
+	
+</form:form>
+
+
+</body>
+</html>	 	  	    	    	     	      	 	
+
+<h1 style="color: greenyellow; font-size: 48px;">Flawless accademy</h1>
+
+<h2>Controller</h2>
+package com.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.model.Academy;
+import com.service.AcademyService;
+
+@Controller
+public class AcademyController {
+	
+	@Autowired
+	private AcademyService service;
+	
+	@RequestMapping(value = "/enrollmentPage", method = RequestMethod.GET)
+	public String showPage(@ModelAttribute("academyBean") Academy academyBean) {
+		System.out.println("in controller");
+		return "enrollmentPage";
+	} 
+	@ModelAttribute("programList")
+	public  Map<String, String> buildState(){
+		
+		Map<String, String> progMap = new HashMap<String, String>();
+		progMap.put("ClassicalDance", "ClassicalDance");
+		progMap.put("KarnaticVocals", "KarnaticVocals");
+		progMap.put("WesternDance","WesternDance");
+		progMap.put("Drawing", "Drawing");
+		progMap.put("Instruments","Instruments");
+		 
+		return progMap;                     
+		
+	}	 	  	    	    	     	      	 	
+
+	@RequestMapping(value = "/progEstimation", method = RequestMethod.POST)
+	public String calculateProgramCost(@ModelAttribute("academyBean") @Valid Academy academyBean, BindingResult result,
+			ModelMap model) {	
+		if (result.hasErrors()) {
+			System.out.println("Error : " + result.toString());
+			return "enrollmentPage";
+		}
+		double cost=service.calculateProgramCost(academyBean);
+		model.addAttribute("cost", cost);
+		return "estimationPage";
+	}
+	
+
+}
+
+
+<h2>Demo</h2>
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class FlawlessAcademyApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(FlawlessAcademyApplication.class, args);
+	}
+
+}
+
+<h2>model</h2>
+package com.model;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Academy {
+	
+	private String program;
+	
+	private double costPerSession;	
+	private int weeksPerMonth;
+	@Min(value = 2, message = "Minimum 2 Sessions/Week")
+	@Max(value = 5, message = "Maximum 5 Sessions/Week")
+	private int sessionsPerWeek;
+	
+	public int getSessionsPerWeek() {
+		return sessionsPerWeek;
+	}
+
+	public void setSessionsPerWeek(int sessionsPerWeek) {
+		this.sessionsPerWeek = sessionsPerWeek;
+	}
+
+	public Academy()
+	{
+		
+	}
+	
+	public int getWeeksPerMonth() {
+		return weeksPerMonth;
+	}
+	public void setWeeksPerMonth(int weeksPerMonth) {
+		this.weeksPerMonth = weeksPerMonth;
+	}
+	public double getCostPerSession() {
+		return costPerSession;
+	}
+	public void setCostPerSession(double costPerSession) {
+		this.costPerSession = costPerSession;
+	}
+	
+	public String getProgram() {
+		return program;
+	}
+	public void setProgram(String program) {
+		this.program = program;
+	}
+
+
+	
+
+}
+	 	  	    	    		        	 	
+
+<h2>Service</h2>
+package com.service;
+
+import org.springframework.stereotype.Service;
+
+import com.model.Academy;
+
+@Service
+public class AcademyService {
+	
+	public double calculateProgramCost (Academy academyBean) {
+		
+		double cost=0.0;
+		academyBean.setWeeksPerMonth(4);
+		System.out.println(academyBean.getSessionsPerWeek()+" "+academyBean.getProgram()+" "+academyBean.getWeeksPerMonth());
+		if(academyBean.getProgram().equalsIgnoreCase("ClassicalDance") && academyBean.getSessionsPerWeek()>=1)
+		{
+			academyBean.setCostPerSession(150.0);
+			cost=academyBean.getCostPerSession()*academyBean.getSessionsPerWeek()*academyBean.getWeeksPerMonth();
+		}
+	else if(academyBean.getProgram().equalsIgnoreCase("KarnaticVocals") && academyBean.getSessionsPerWeek()>=1 )
+	{
+		academyBean.setCostPerSession(100.0);
+		cost=academyBean.getCostPerSession()*academyBean.getSessionsPerWeek()*academyBean.getWeeksPerMonth();
+	}
+	else if(academyBean.getProgram().equalsIgnoreCase("WesternDance") && academyBean.getSessionsPerWeek()>=1)
+	{
+		academyBean.setCostPerSession(125.0);
+		cost=academyBean.getCostPerSession()*academyBean.getSessionsPerWeek()*academyBean.getWeeksPerMonth();
+	}
+	if(academyBean.getProgram().equalsIgnoreCase("Drawing") && academyBean.getSessionsPerWeek()>=1)
+	{
+		academyBean.setCostPerSession(130.0);
+		cost=academyBean.getCostPerSession()*academyBean.getSessionsPerWeek()*academyBean.getWeeksPerMonth();
+	}
+else if(academyBean.getProgram().equalsIgnoreCase("Instruments") && academyBean.getSessionsPerWeek()>=1)
+{
+	academyBean.setCostPerSession(200.0);
+	cost=academyBean.getCostPerSession()*academyBean.getSessionsPerWeek()*academyBean.getWeeksPerMonth();
+}	 	  	    	    		        	 	
+	return cost;
+		
+	}
+
+}
+
+<h2>Resources</h2>
+server.port=9088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+
+
+<h2>enrollmentPage.jsp</h2>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color:lavender">
+<h1><center> Flawless Academy</center></h1>
+<form:form method="post" action="progEstimation" modelAttribute="academyBean">
+<table style="margin: 0px auto; margin-left: auto; margin-right:auto">
+		               
+              
+			<tr>
+				<td>Select preferred program</td>
+				<td>
+				 <form:select path="program" id="program">
+						<form:options items="${programList}"/>
+					</form:select>	
+					
+				</td>
+			</tr>
+						
+			<tr>
+			<td>Number of sessions per week</td>
+			<td><form:input path="sessionsPerWeek" id="sessionsPerWeek"/></td>
+			<td><form:errors path="sessionsPerWeek" id="errormsg"/></td>
+			<tr>
+				<td><input type="submit" value="Program Cost" name="submit" /></td>
+				
+			</tr>
+			
+		</table>
+</form:form>
+
+
+</body>
+</html>	 	  	    	    	     	      	 	
+
+<h2>estimationPage.jsp</h2>
+
+<%@page isELIgnored="false" %>
+<html>
+<body bgcolor="lavender">
+<center><h2>Welcome to Flawless Academy. Your preferred program cost is Rs. ${cost}</h2></center>
+</body>
+</html>
+
+<h1 style="color: yellowgreen; font-size: 48px;">SnapFitness.java</h1>
+<h2>Controller</h2>
+
+package com.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.model.FitnessCenter;
+import com.service.FitnessService;
+
+//use appropriate annotation to configure SnapFitnessController as Controller
+@Controller
+public class FitnessController {
+	
+//	Use appropriate annotation
+    @Autowired
+	private FitnessService service;	
+	
+	@ModelAttribute("packageList")
+	 public Map<String, String> buildState() {
+		Map<String, String> pairs = new HashMap();
+		pairs.put("Aerobics","Aerobics");
+		pairs.put("Zumba","Zumba");
+		pairs.put("PersonalTraining","PersonalTraining");
+		pairs.put("Yoga","Yoga");
+		pairs.put("RegularGYM","RegularGYM");
+		return pairs;
+	}
+	@GetMapping("/snapEnquiryPage")
+	 public String snapEnquiryPage( @ModelAttribute("snap") FitnessCenter fitnessCenter){
+		 return "snapEnquiryPage";
+	 }
+    @PostMapping("/packEstimation")
+	public String calculatePackageCost(@Valid @ModelAttribute("snap")FitnessCenter fitness, BindingResult result,
+			ModelMap model) {
+	if(result.hasErrors()){
+	        model.addAttribute("messege", "Number of months should be minimum one");
+			return "snapEnquiryPage";
+		}
+		model.addAttribute("cost",service.calculatePackageCost(fitness));
+		return "snapEstimation";
+	}
+	
+
+}
+
+<h2>Demo</h2>
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.*"})
+public class SnapFitnessApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SnapFitnessApplication.class, args);
+	}
+
+}
+
+<h2>model</h2>
+package com.model;
+import javax.validation.constraints.Min;
+import org.springframework.stereotype.Component;
+
+//pojo class with required attributes,getters and setters 
+
+//use appropriate annotation to make this class as component class
+@Component
+public class FitnessCenter {
+	
+	private String preferredPackage;
+	private double costPerMonth;
+	// use appropriate annotation for validating numberOfMonths attribute
+	@Min(value= 1,message="Number of months should be minimum one")
+	private int numberOfMonths;
+	
+
+	public String getPreferredPackage() {
+		return preferredPackage;
+	}
+	public void setPreferredPackage(String preferredPackage) {
+		this.preferredPackage = preferredPackage;
+	}
+	public double getCostPerMonth() {
+		return costPerMonth;
+	}
+	public void setCostPerMonth(double costPerMonth) {
+		this.costPerMonth = costPerMonth;
+	}
+	public int getNumberOfMonths() {
+		return numberOfMonths;
+	}
+	public void setNumberOfMonths(int numberOfMonths) {
+		this.numberOfMonths = numberOfMonths;
+	}
+	
+
+}
+	 	  	    	    		        	 	
+
+<h2>Services</h2>
+package com.service;
+
+import com.model.FitnessCenter;
+
+import org.springframework.stereotype.Service;
+
+//use appropriate annotation to configure SnapFitnessService as a Service class
+@Service
+public class FitnessService {
+	
+	//calculate the Package cost and return the rent amount
+	public double calculatePackageCost (FitnessCenter fitness) {
+		
+		double packageCost=0.0;
+		// fill the code
+		String serviceName = fitness.getPreferredPackage();
+		int months = fitness.getNumberOfMonths();
+		if(serviceName.equals("Aerobics"))
+		{
+			packageCost = months*1500.0;
+		}
+		else if(serviceName.equals("Zumba"))
+		{
+			packageCost = months*1750.0;
+		}
+		else if(serviceName.equals("RegularGYM"))
+		{
+			packageCost = months*1250.0;
+		}
+		else if(serviceName.equals("PersonalTraining"))
+		{
+			packageCost = months*2500.0;
+		}
+		else if(serviceName.equals("Yoga"))
+		{
+			packageCost = months*1300.0;
+		}
+		
+		return packageCost;
+		
+		
+	}
+
+}
+
+
+<h2>Resources</h2>
+#Do not edit the key server.port.Port number can be changed
+server.port=8088
+spring.mvc.view.prefix = /WEB-INF/views/
+spring.mvc.view.suffix = .jsp
+spring.mvc.static-path-pattern=/resources/**
+
+
+<h2>snapEnquiryPage.jsp</h2>
+
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color:lavender">
+<h1><center> Snap Fitness Center </center></h1>
+    <form:form modelAttribute="snap" method="post" action="/packEstimation">
+	 <center>
+		<table>
+			<tr>
+				<td><form:label path="preferredPackage">Select Package</form:label></td>
+				<td><form:select path="preferredPackage" id="preferredPackage"
+						name="preferredPackage" items="${packageList}" required="required" /></td>
+			</tr>
+			<tr>
+				<td><form:label path="numberOfMonths">Package duration (In months)</form:label></td>
+				<td><form:input path="numberOfMonths" id="numberOfMonths"
+						name="numberOfMonths" required="required" /><label>${messege}</label></td>
+			</tr>
+			<tr>
+				<td><input type="submit" id="submit(Name)" name="submit"
+					value="Package Cost" /></td>
+				<td></td>
+			</tr>
+
+		</table>
+		</center>
+	</form:form>
+
+
+</body>
+</html>	 
+
+<pre>
+<h2>snapEstimation.jsp</h2>
+<%@page isELIgnored="false" %>
+<html>
+<body bgcolor="lavender">
+<h3>Welcome to Snap Fitness Center.Your preferred package cost is Rs.${cost}</h3>
+</body>
+</html>
+</pre>
+</pre>
+</html>
+

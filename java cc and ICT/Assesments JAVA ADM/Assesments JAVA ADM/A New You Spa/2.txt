@@ -1,0 +1,63 @@
+import java.util.Scanner;
+
+public class UserInterface {
+ 
+ public static void main(String[] args){
+     
+  Scanner sc=new Scanner(System.in);
+  Members member = new Members();
+
+
+System.out.println("\n enter customer id");
+member.customerId=sc.nextLine(); 
+
+
+System.out.println("\n enter customer name");
+member.customerName=sc.nextLine(); 
+
+
+System.out.println("\n enter mobile number");
+member.mobileNumber=sc.nextLine(); 
+
+
+System.out.println("\n enter member type");
+member.memberType=sc.nextLine(); 
+
+
+System.out.println("\n enter email id");
+member.emailId=sc.nextLine();
+
+String customer_amount_purchased;
+System.out.println("\n enter amount purchased");
+customer_amount_purchased=sc.nextLine(); 
+double amount_purchased = Double.parseDouble(customer_amount_purchased);
+
+DiamondMembers dia = new DiamondMembers();
+GoldMembers gld = new GoldMembers();
+PlatinumMembers plt = new PlatinumMembers();
+
+double new_amount;
+
+if(dia.validateCustomerId(customerId)) {
+    new_amount = dia.calculateDiscount(amount_purchased);
+    System.out.println("\n Name -- " + member.customerName);
+    System.out.println("\n Id -- " + member.customerId);
+    System.out.println("\n Email id -- " + member.emailId);
+    System.out.println("\n Amount to be paid -- " + new_amount);
+} else if (gld.validateCustomerId(customerId)) {
+    new_amount = dia.calculateDiscount(amount_purchased);
+    System.out.println("\n Name -- " + member.customerName);
+    System.out.println("\n Id -- " + member.customerId);
+    System.out.println("\n Email id -- " + member.emailId);
+    System.out.println("\n Amount to be paid -- " + new_amount);
+} else if (plt.validateCustomerId(customerId)) {
+    new_amount = dia.calculateDiscount(amount_purchased);
+    System.out.println("\n Name -- " + member.customerName);
+    System.out.println("\n Id -- " + member.customerId);
+    System.out.println("\n Email id -- " + member.emailId);
+    System.out.println("\n Amount to be paid -- " + new_amount);
+} else {
+    System.out.println("\n Inavlid Id. \n Please provide valid customer id");
+}
+ }
+}

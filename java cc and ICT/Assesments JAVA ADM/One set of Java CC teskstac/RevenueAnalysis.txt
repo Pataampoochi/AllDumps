@@ -1,0 +1,98 @@
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Scanner;
+public class Main
+{
+	public static void main(String[] args) throws Exception
+	{
+		Scanner sc;
+		sc= new Scanner(System.in);
+
+		System.out.println("Enter the number of transaction made:");
+
+		int number = Integer.parseInt(sc.nextLine());
+		System.out.println("Enter the transaction details:");
+		String arrtransDetails[] = new String[number];
+		for(int i=0;i<arrtransDetails.length;i++) {
+			String str  = sc.nextLine(); 
+			arrtransDetails[i] = str;
+			String tranDetails[] = arrtransDetails[i].split(",",0);
+			for (String detail : tranDetails) {
+				//System.out.print(detail);
+			}
+		}
+				
+				
+		System.out.println("\n"+"Enter the date:");
+		String strDate = sc.nextLine();
+		int weekDate = Integer.parseInt(getWeekNumber(strDate).split(" ",0)[0]);
+		String strActDate = getWeekNumber(strDate);
+		System.out.println("This date falls on week "+weekDate+" of this year");
+		
+		String revenueForDay = "";
+		boolean flag = false;
+		for(String detail : arrtransDetails) {
+			if(detail.contains(strDate)) {
+				revenueForDay = detail.split(",",0)[1];
+				System.out.println("Revenue on "+strDate+" : "+revenueForDay);
+				flag = true;
+			}
+			if(flag) {
+				break;
+			}
+		}
+
+				sc.close(); //closes the scanner
+				HashMap<String, String> dateValues = returnValuesinMap(arrtransDetails);
+				long total = 0;
+				for(String datValue : dateValues.keySet()) {
+				String expDate = dateValues.get(datValue).split(",",0)[0];
+				if(expDate.equals(strActDate) && !datValue.equals(weekDate)) {
+					total += Long.parseLong(dateValues.get(datValue).split(",",0)[1]);
+				}
+				}
+				if(total==0) {
+					total = Long.parseLong(revenueForDay);
+				}
+				System.out.println("Revenue for week "+weekDate+" is "+total);
+		
+	}
+	
+	public static String getWeekNumber(String strDate) {
+		String format = "dd/MM/yyyy";
+		int week = 0;
+		String weekNumber = "";
+		SimpleDateFormat df = new SimpleDateFormat(format);
+		try {
+		Date date = df.parse(strDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		week = cal.get(Calendar.WEEK_OF_YEAR);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		weekNumber = week+""+" "+strDate.split("/",0)[2];
+		return weekNumber;
+	}
+	
+	public static HashMap<String, String> returnValuesinMap(String[]arrtransDetails) {
+		HashMap<String, String> dateValues  = new HashMap<>();
+		try {
+			for(String transDetail : arrtransDetails) {
+					String date = transDetail.split(",",0)[2].trim();
+					String revenue = transDetail.split(",",0)[1].trim();
+					dateValues.put(date,getWeekNumber(date)+""+","+revenue);
+			}
+			}
+		 catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		return dateValues;
+		
+	}
+}

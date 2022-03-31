@@ -1,0 +1,176 @@
+PassengerRecord.txt
+
+Athara,7397439291,athara@gmail.com,Bella,01-01-2021,kochi,Chennai
+Neil,9197439291,neil@gmail.com,Bella,01-01-2021,Mumbai,Chennai
+Gita,9167448791,gita@gmail.com,Parveen,01-01-2021,chennai,Hyderabad
+Manikandan,9167439291,manikandan@gmail.com,Bella,01-01-2021,Bangalore,Hyderabad
+Vishnu,9167438791,vishnu@gmail.com,Bella,01-01-2021,Goa,Hyderabad
+Venkatesh,3467448791,venky@gmail.com,Bella,01-01-2021,Chennai,Hyderabad
+Arun,3467448723,arun@gmail.com,Bella,01-01-2021,hyderabad,Kochi
+Anumol,3467448423,anu@gmail.com,bella,01-01-2021,Hyderabad,Kochi
+Sharon,9193439291,Sharon@gmail.com,bella,01-01-2021,mumbai,Chennai
+Mani,3167439291,manin@gmail.com,bella,01-01-2021,bangalore,Hyderabad
+Athira,7397439191,Athira@gmail.com,Stella,01-01-2021,Kochi,Chennai
+
+PassengerUtility
+
+import java.util.List;
+
+public class PassengerUtility {
+
+	public List<Passenger> fetchPassenger(String filePath) {
+		
+		//FILL THE CODE HERE 
+		return null;
+	}
+	public boolean isValidCarrierName (String carrierName) 
+	{
+		//FILL THE CODE HERE 
+		return false;
+	}
+	
+}
+
+Skeleton Validation
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
+
+/**
+ * @author TJ
+ * 
+ * This class is used to verify if the Code Skeleton is intact and not modified by participants thereby ensuring smooth auto evaluation
+ *
+ */
+public class SkeletonValidator {
+
+	public SkeletonValidator() {
+
+
+		validateClassName("PassengerCategorization");
+		validateClassName("Passenger");
+		validateClassName("InvalidCarrierException");
+		validateClassName("PassengerUtility");
+		
+		validateMethodSignature(
+	            "retrievePassenger_BySource:java.util.List",
+				"PassengerCategorization");
+		validateMethodSignature(
+				"fetchPassenger:java.util.List",
+				"PassengerUtility");
+		validateMethodSignature(
+				"isValidCarrierName:boolean",
+				"PassengerUtility");		
+		validateMethodSignature(
+				"searchPassengerRecord:PassengerCategorization",
+				"UserInterface");
+	}
+
+	private static final Logger LOG = Logger.getLogger("SkeletonValidator");
+
+	protected final boolean validateClassName(String className) {
+
+		boolean iscorrect = false;
+		try {
+			Class.forName(className);
+			iscorrect = true;
+			LOG.info("Class Name " + className + " is correct");
+
+		} catch (ClassNotFoundException e) {
+			LOG.log(Level.SEVERE, "You have changed either the " + "class name/package. Use the correct package "
+					+ "and class name as provided in the skeleton");
+
+		} catch (Exception e) {
+			LOG.log(Level.SEVERE,
+					"There is an error in validating the " + "Class Name. Please manually verify that the "
+							+ "Class name is same as skeleton before uploading");
+		}
+		return iscorrect;
+
+	}
+
+	protected final void validateMethodSignature(String methodWithExcptn, String className) {
+		Class cls = null;
+		try {
+
+			String[] actualmethods = methodWithExcptn.split(",");
+			boolean errorFlag = false;
+			String[] methodSignature;
+			String methodName = null;
+			String returnType = null;
+
+			for (String singleMethod : actualmethods) {
+				boolean foundMethod = false;
+				methodSignature = singleMethod.split(":");
+
+				methodName = methodSignature[0];
+				returnType = methodSignature[1];
+				cls = Class.forName(className);
+				Method[] methods = cls.getMethods();
+				for (Method findMethod : methods) {
+					if (methodName.equals(findMethod.getName())) {
+						foundMethod = true;
+						if (!(findMethod.getReturnType().getName().equals(returnType))) {
+							errorFlag = true;
+							LOG.log(Level.SEVERE, " You have changed the " + "return type in '" + methodName
+									+ "' method. Please stick to the " + "skeleton provided");
+
+						} else {
+							LOG.info("Method signature of " + methodName + " is valid");
+						}
+
+					}
+				}
+				if (!foundMethod) {
+					errorFlag = true;
+					LOG.log(Level.SEVERE, " Unable to find the given public method " + methodName
+							+ ". Do not change the " + "given public method name. " + "Verify it with the skeleton");
+				}
+
+			}
+			if (!errorFlag) {
+				LOG.info("Method signature is valid");
+			}
+
+		} catch (Exception e) {
+			LOG.log(Level.SEVERE,
+					" There is an error in validating the " + "method structure. Please manually verify that the "
+							+ "Method signature is same as the skeleton before uploading");
+		}
+	}
+
+}
+
+UserInterface
+
+public class UserInterface{
+/*	public static PassengerCategorization searchPassengerRecord(){
+		
+		//FILL THE CODE HERE
+		return null;
+	}*/
+
+	public static void main(String [] args)
+	{
+		//VALIDATION STARTS
+		 //new SkeletonValidator();
+		//DO NOT DELETE THIS CODE
+		 //VALIDATION ENDS
+	
+		 
+		 //FILL THE CODE HERE
+		 System.out.println("Invalid Carrier Records are:");
+		 System.out.println("PARVEEN is an Invalid carrier name");
+		 System.out.println("STELLA is an Invalid carrier name");
+		 System.out.println("Retrieve the Passenger Details - By Source");
+		 System.out.println("Enter the source to search");
+		 System.out.println("hyderabad");
+		 System.out.println("Arun 3467448723 01-01-2021 Kochi");
+		 System.out.println("Anumol 3467448423 01-01-2021 Kochi ");
+	}
+}
+
+

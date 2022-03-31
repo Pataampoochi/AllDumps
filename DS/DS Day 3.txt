@@ -1,0 +1,245 @@
+queue-using-two-stack
+-------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+class Solution {
+    static void Main(String[] args) {
+        var n = Console.ReadLine();
+        int n1 = int.Parse(n);
+        Queue<string> q = new Queue<string>();
+        for(int i=0;i<n1;i++){
+            var input = Console.ReadLine();
+            string[] sInput = input.Split(' ');
+            if(sInput.Length == 1){
+                if(sInput[0].Equals("2")){
+                    q.Dequeue();
+                }else{
+                    Console.WriteLine(q.Peek());
+                }
+            }else{
+                q.Enqueue(sInput[1]);
+            }
+        }
+    }
+}
+
+
+
+
+--------------------------------------------------------------
+Components in a graph
+----------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+class UnionFind
+{
+    static int[] p;
+    static int[] s;
+    static int Find(int x)
+    {
+        if (p[x] != x)
+        {
+            p[x] = Find(p[x]);
+        }
+        return p[x];
+    }
+    static void Union(int x, int y)
+    {
+        if (p[x] == -1)
+        {
+            p[x] = x;
+            s[x] = 1;
+        }
+        if (p[y] == -1)
+        {
+            p[y] = y;
+            s[y] = 1;
+        }
+        int px = Find(x);
+        int py = Find(y);
+        if (px != py){
+            p[px] = p[py];
+            s[py] += s[px];
+        }
+    }
+    static void Main(String[] args)
+    {
+        int N = int.Parse(Console.ReadLine());
+        p = new int[2 * N];
+        s = new int[2 * N];
+        for (int i = 0; i< 2 * N; i++)
+        {
+            p[i] = -1;
+            s[i] = 0;
+        }
+        for (int i = 0; i< N; i++)
+        {
+args = Console.ReadLine().Split();
+            Union(int.Parse(args[0]) - 1, int.Parse(args[1]) - 1);
+        }
+        int min = int.MaxValue;
+        int max = int.MinValue;
+        for (int i = 0; i< 2 * N; i++)
+        {
+            if (i == p[i])
+            {
+                if (s[i] < min) min = s[i];
+                if (s[i] > max) max = s[i];
+            }
+        }
+Console.WriteLine("{0} {1}", min, max);
+    }
+}
+
+
+-----------------------------------------------------------
+Balanced Brackets
+----------------------------------------------------------
+
+public static string isBalanced(string s)
+    {
+        var openings = new[] { '[', '{', '(' };
+
+        var stack = new Stack<char>();
+
+        foreach (var c in s.ToCharArray())
+        {
+            if (openings.Contains(c))
+                stack.Push(c);
+
+            else if (c == ']')
+                if (!TryPeek(stack, out var c1) || c1 != '[')
+                    return "NO";
+                else
+                    stack.Pop();
+
+            else if (c == ')')
+                if (!TryPeek(stack, out var c2) || c2 != '(')
+                    return "NO";
+                else
+                    stack.Pop();
+
+            else if (c == '}')
+                if (!TryPeek(stack, out var c3) || c3 != '{')
+                    return "NO";
+                else
+                    stack.Pop();
+        }
+
+        return stack.Count == 0 ? "YES" : "NO";
+
+    }
+    
+    static bool TryPeek(Stack<char> stack, out char value)
+    {
+        value = default(char);
+
+        if (stack.Count == 0) return false;
+
+        value = stack.Peek();
+        return true;
+    }
+
+
+----------------------------------------------------------------------
+find-the-running-median
+----------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+class Solution {
+    static void Main(String[] args) 
+    {
+        List<int> slist = new  List<int>();        
+        int n = int.Parse(Console.ReadLine());
+       
+        for(int i = 0; i<n; i++)
+        {
+            int newNum = int.Parse(Console.ReadLine());
+            
+            int index = slist.BinarySearch(newNum);
+            if(index < 0)
+            {
+                slist.Insert(~index,newNum);                
+            }
+            else
+            {
+                slist.Insert(index,newNum);                
+            }
+            
+            int insCount = i +1;
+            if(insCount == 1)
+            {
+                Console.WriteLine(slist[0].ToString("0.0"))    ;
+            }
+            else if(insCount %2 == 0)
+            {
+                int lower = i/2;
+                float avg = ((float)slist[lower] + (float)slist[lower+1])/2;
+                Console.WriteLine(avg.ToString("0.0"));
+            }
+            else
+            {
+                int lower = i/2;
+                float avg = ((float)slist[lower]);
+                Console.WriteLine(avg.ToString("0.0"));
+            }
+
+        }
+        
+    }
+
+}
+
+----------------------------------------------------------------------
+delete-duplicate-value-nodes-from-a-sorted-linked-list
+----------------------------------------------------------
+
+public static SinglyLinkedListNode removeDuplicates(SinglyLinkedListNode llist)
+    {
+        SinglyLinkedListNode original = llist;
+        
+        if(llist == null)
+            return null;
+        
+        if(llist.next == null)
+            return llist;
+        
+        while(llist != null && llist.next != null)
+        {
+            if(llist.data == llist.next.data)
+                llist.next = llist.next.next;
+            else
+                llist = llist.next;
+        }
+        
+        return original;
+
+    }
+
+-----------
+in Python 3
+------------
+
+def removeDuplicates(llist):
+    # Write your code here
+    c = llist
+    p = None
+    if c==None or c.next==None:
+        return(llist)
+    else:
+        p=c
+        c=c.next
+    while c!= None:
+        if p.data==c.data:
+            p.next = c.next
+            c=c.next
+        else:
+            p = p.next
+            c = c.next
+    return(llist)

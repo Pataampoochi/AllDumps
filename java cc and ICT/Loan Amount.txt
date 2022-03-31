@@ -1,0 +1,142 @@
+main
+
+
+# Please do not alter the given template
+ 
+import employee_management as em
+ 
+def main():
+    no_employees=int(input("Enter the no. of employees:"))
+ 
+    # Fill your code here for getting inputs and creating necessary objects and  
+    # invoke appropriate method for performing operations as per the requirement specification.
+    emp_obj=em.EmployeeManagement()
+    for i in range(no_employees):
+        print("Enter the employee details ",i+1,":")
+        eid,name,annual_salary=input().split(':')
+        emp_obj.add_employee_details(eid,name,float(annual_salary))
+    emp_obj.add_employee_details("101","name",float(111))
+    
+    amount=float(input("Enter the loan amount to search:"))
+     
+    # Fill your code for invoking the appropriate methods for displaying data as per the specification
+    rec=emp_obj.view_employee_details(amount)
+    if len(rec)!=0:
+        print("No. of employees:",len(rec))
+        for key,value in rec.items():
+            print("Employee id:",key, " - Loan amount:",value)
+ 
+    else:
+        print("No employees found")
+ 
+  
+if __name__=='__main__':
+    main()   
+
+
+
+
+
+Employee_Management------------------------------------------------------------
+
+
+
+
+  # Please do not alter the given template
+ # You can add any number of methods and attributes as you required without changing the given template
+ 
+import employee as emp
+ 
+class EmployeeManagement:
+    
+    def __init__(self):
+        
+        #Create necessary private attribute(s)
+        self.__employee_list=[]
+         
+         
+        return
+     
+ 
+    def add_employee_details(self,employee_id,employee_name,annual_salary):
+        #Fill your code here
+        e_obj=emp.Employee(employee_id,employee_name,annual_salary)
+        e_obj.calculate_loan_amount()
+        self.__employee_list.append(e_obj)
+         
+        return
+         
+         
+     
+    def view_employee_details(self, amount):
+        #Fill your code here
+        my_dict={}
+        for i in self.__employee_list:
+            print(i.get_loan_amount())
+            if i.get_loan_amount()>amount:
+                my_dict[i.get_employee_id()]=i.get_loan_amount()
+        return my_dict
+         
+         
+        return None #TODO CHANGE THIS RETURN VALUE
+
+
+
+employee-------------------------------------------------------------------
+
+
+
+
+
+
+ # Please do not change the given template.  Fill your code only in the provided places.
+ 
+class Employee:
+     
+    # # Write the code for the constructor here
+    def __init__(self,employee_id,employee_name,annual_salary):
+        self.__employee_id=employee_id
+        self.__employee_name=employee_name
+        self.__annual_salary=annual_salary
+        self.__loan_amount=0.0
+     
+     
+    def get_employee_id(self):
+        return self.__employee_id
+         
+    def set_employee_id(self,employee_id):
+        self.__employee_id=employee_id
+         
+     
+    def get_employee_name(self):
+        return self.__employee_name
+         
+    def set_employee_name(self,employee_name):
+        self.__employee_name=employee_name
+         
+    def get_annual_salary(self):
+        return self.__annual_salary
+         
+    def set_annual_salary(self,annual_salary):
+        self.__annual_salary=annual_salary
+     
+    def get_loan_amount(self):
+        return self.__loan_amount
+     
+    def set_loan_amount(self,loan_amount):
+        self.__loan_amount=loan_amount
+              
+    def calculate_loan_amount(self):
+        # # Fill your code here
+        if self.__annual_salary>=500000:
+            self.__loan_amount=self.__annual_salary*(40/100)
+        elif self.__annual_salary<500000 and self.__annual_salary>=300000:
+            self.__loan_amount=self.__annual_salary*(30/100)
+        elif self.__annual_salary<300000 and self.__annual_salary>=150000:
+            self.__loan_amount=self.__annual_salary*(20/100)
+        else:
+            self.__loan_amount=0.0
+         
+         
+        return
+     

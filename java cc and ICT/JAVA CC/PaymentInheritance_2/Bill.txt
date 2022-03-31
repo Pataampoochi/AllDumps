@@ -1,0 +1,42 @@
+public class Bill {
+
+	 public String processPayment(Payment obj) {
+
+	 String message = "Payment not done and your due amount is "+obj.getDueAmount();
+
+	 if(obj instanceof Cheque ) {
+
+	 Cheque cheque = (Cheque) obj;
+
+	 if(cheque.payAmount())
+
+	 message = "Payment done succesfully via cheque";
+
+	 }
+
+	 else if(obj instanceof Cash ) {
+
+	 Cash cash = (Cash) obj;
+
+	 if(cash.payAmount())
+
+	 message = "Payment done succesfully via cash";
+
+	 }
+
+	 else if(obj instanceof Credit ) {
+
+	 Credit card = (Credit) obj;
+
+	 if(card.payAmount())
+
+	 message = "Payment done succesfully via creditcard. Remainig amount in your "+card.getCardType()+" card is "+card.getCreditCardAmount();
+
+	 }
+
+	 return message;
+
+	 }
+
+	}
+

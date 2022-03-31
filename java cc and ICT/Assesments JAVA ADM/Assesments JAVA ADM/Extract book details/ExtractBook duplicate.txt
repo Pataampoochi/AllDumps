@@ -1,0 +1,92 @@
+import java.util.Scanner;
+
+class ExtractBook {
+
+    public static int extractDepartmentCode(String input) {
+        return Integer.parseInt(input.substring(0, 3));
+    }
+
+    public static String extractDepartmentName(int code) {
+
+        switch (code) {
+        case 101:
+            return "Accounting";
+        case 102:
+            return "Economics";
+        case 103:
+            return "Engineering";
+        }
+
+        throw new Error(code + " is invalid department code");
+    }
+
+    public static int extractDate(String input) {
+        String yearStr = input.substring(3, 7);
+        try {
+            int year = Integer.parseInt(yearStr);
+            if (year > 2020 || year < 1900) {
+                throw new NumberFormatException();
+            }
+            return year;
+        } catch (NumberFormatException e) {
+            throw new Error(yearStr + " is invalid year");
+        }
+
+    }
+
+    public static int extractNumberOfPages(String input) {
+        String pagesStr = input.substring(7, 12);
+        try {
+            int pages = Integer.parseInt(pagesStr);
+            if (pages < 10) {
+                throw new NumberFormatException();
+            }
+            return pages;
+        } catch (NumberFormatException e) {
+            throw new Error(pagesStr + " are invalid pages");
+        }
+    }
+
+    public static String extractBookId(String input) {
+        String id = input.substring(12, 18);
+        if (!Character.isAlphabetic(id.charAt(0)))
+            throw new NumberFormatException();
+        try {
+            Integer.parseInt(id.substring(1));
+        } catch (NumberFormatException e) {
+            throw new Error(id + " is invalid book id");
+        }
+        return id;
+    }
+
+    public static void parseAndPrint(String str) {
+        if (str.length() != 18) {
+            System.out.println(str + " is an invalid input");
+            return;
+        }
+     
+        try {
+            int dCode = extractDepartmentCode(str);
+            String dString = extractDepartmentName(dCode);
+            int year = extractDate(str);
+            int pages = extractNumberOfPages(str);
+            String bookId = extractBookId(str);
+
+            System.out.println("Department Code: " + dCode);
+            System.out.println("Department Name: " + dString);
+            System.out.println("Year of Publication: " + year);
+            System.out.println("Number of Pages: " + pages);
+            System.out.println("Book Id: " + bookId);
+
+        } catch (Error e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String input = sc.nextLine();
+        parseAndPrint(input);
+        sc.close();
+    }
+}

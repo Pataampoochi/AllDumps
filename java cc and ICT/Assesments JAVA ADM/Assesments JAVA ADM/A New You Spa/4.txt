@@ -1,0 +1,33 @@
+public class DiamondMembers {
+ 
+ // Fill the code
+ 
+ public boolean validateCusomerId(String customer_id){
+     int id_len = customer_id.length();
+     int chk = id_len-3;
+     String type = customer_id.substring(0,chk);
+     String str = customer_id.substring(chk,id_len);
+     String s2 = "Diamond";
+     if(type.equals(s2)){
+         for(int i=0;i<3;i++){
+             if(str.charAt(i)>='0' && str.charAt(i)<='9'){
+                 return true;
+             }
+             else{
+                 return false;
+             }
+         }
+         return false;
+         
+     }else {
+         return false;
+     }
+  // Fill the code
+ }
+  public double calculateDiscount(double purchaseAmount){
+  // Fill the code
+  double discount = 0.45*purchaseAmount;
+  double new_amount_to_be_paid = purchaseAmount-discount;
+  return new_amount_to_be_paid;
+ }
+}

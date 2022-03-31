@@ -1,0 +1,13 @@
+create database ctsuniversity;
+use ctsuniversity;
+
+create table ConstructionProject
+(
+projectId varchar(10) primary key,
+plannedDOStart date,
+typeOfProject varchar(30),
+structureName varchar(30),
+areaInSqFt float,
+estimatedCostInLac float,
+estimatedTimeInMonths float
+);
