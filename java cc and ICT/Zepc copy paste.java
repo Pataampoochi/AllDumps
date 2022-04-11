@@ -1,14 +1,18 @@
-ProductOrderDAO.Java
+//ProductOrderDAO.Java
+
+
+
 package com.cts.zepcpd.dao;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.cts.zepcpd.exception.ProductOrderException;
 import com.cts.zepcpd.util.*;
 import com.cts.zepcpd.vo.ProductOrder;
+
 public class ProductOrderDAO {
 public boolean addProductOrderDetails(List<ProductOrder> pdtOrder) throws
-ProductOrderException {
 boolean recordsAdded = false;
 //Code here..
 Connection con = DBConnectionManager.getInstance().getConnection();
@@ -67,6 +71,7 @@ Insertion Failed",
 }
 return recordsAdded;
 }
+
 public List<ProductOrder> getAllProductOrderDetails() throws
 ProductOrderException {
 List<ProductOrder> pdtOrder = new ArrayList<ProductOrder>();
@@ -106,50 +111,59 @@ Retrieval Failed",
 }
 return pdtOrder;
 }
-}
-ProductOrderException.Java
-package com.cts.zepcpd.exception;
+}ProductOrderException.Java package com.cts.zepcpd.exception;
+
 public class ProductOrderException extends Exception {
-private static final long serialVersionUID = -1105431869622052445L;
-/**
-* @param message
-* @param cause
-*/
-public ProductOrderException(String message, Throwable cause) {
-super(message, cause);
+	private static final long serialVersionUID = -1105431869622052445L;
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public ProductOrderException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }
-}
-MainApp.Java
+
+// MainApp.Java
+
+
 package com.cts.zepcpd.main;
 import com.cts.zepcpd.service.*;
 import com.cts.zepcpd.skeletonvalidator.SkeletonValidator;
 import com.cts.zepcpd.util.*;
+
 public class MainApp {
-private MainApp() {
+	private MainApp() {
+	}
+
+	public static void main(String[] args) {
+		// Don't delete this code
+		// Skeletonvalidaton starts
+		new SkeletonValidator();
+		// Skeletonvalidation ends
+		// Write your code here..
+		try {
+			ProductOrderService service = new ProductOrderService();
+			System.out.println(service.addProductOrderDetails("inputFeed.txt"));
+			System.out.println(service.searchProductOrder("R005"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// List<StudentAdmission> studentAdmissionList =
+		//
+		service.buildStudentAdmissionsList(ApplicationUtil.readFile("inputFeed.txt"));
+		/*
+		 * for(StudentAdmission e:studentAdmissionList) { System.out.println(e);
+		 * }
+		 */
+	}
 }
-public static void main(String[] args) {
-//Don't delete this code
-//Skeletonvalidaton starts
-new SkeletonValidator();
-//Skeletonvalidation ends
-//Write your code here..
-try {
-ProductOrderService service = new ProductOrderService();
-System.out.println(service.addProductOrderDetails("inputFeed.txt"));
-System.out.println(service.searchProductOrder("R005"));
-} catch (Exception e) {
-e.printStackTrace();
-}
-// List<StudentAdmission> studentAdmissionList =
-//
-service.buildStudentAdmissionsList(ApplicationUtil.readFile("inputFeed.txt"));
-/*
-* for(StudentAdmission e:studentAdmissionList) {
-System.out.println(e); }
-*/
-}
-}
-ProductOrderService.Java
+
+// ProductOrderService.Java
+
+
+
 package com.cts.zepcpd.service;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,209 +171,201 @@ import com.cts.zepcpd.dao.*;
 import com.cts.zepcpd.exception.ProductOrderException;
 import com.cts.zepcpd.util.*;
 import com.cts.zepcpd.vo.ProductOrder;
+
 public class ProductOrderService {
-/**
-* @param productOrderRecords
-* @return List<ProductOrder>
-*/
-public static List<ProductOrder> buildProductOrdersList(List<String>
-productOrderRecords) {
-List<ProductOrder> productOrderList = new ArrayList<ProductOrder>();
-//Code here..
-for (String e : productOrderRecords) {
-String res[] = e.split(",");
-String orderId = res[0];
-String productCode = res[1];
-String dateOfOrder = res[2]; //DateType
-String productLevel = res[3];
-String dateOfDelivery = res[4]; //DateType
-String noOfProducts= res[5];
-String noOfKmsForDelivery = res[6];
-String managerApproval = res[7];
-ProductOrder obj = new ProductOrder();
-obj.setOrderId(orderId);
-obj.setProductCode(productCode);
-// converting String to java.uti.Date
-obj.setDateOfOrder(ApplicationUtil.convertStringToDate(dateOfOrder));
-obj.setProductLevel(productLevel);
-// converting String to java.uti.Date
-obj.setDateOfDelivery(ApplicationUtil.convertStringToDate(dateOfDelivery));
-obj.setNoOfProducts(Integer.parseInt(noOfProducts));
-obj.setNoOfKmsForDelivery(Double.parseDouble(noOfKmsForDelivery));
-obj.setManagerApproval(managerApproval);
-double[] productOrderCosts =
-calculateTotalOrderCost(
-Integer.parseInt(noOfProducts),
-Double.parseDouble(noOfKmsForDelivery),productLevel );
-obj.setProductCost(productOrderCosts[0]);
-obj.setGstTax(productOrderCosts[1]);
-obj.setDeliveryCost(productOrderCosts[2]);
-obj.setTotalOrderCost(productOrderCosts[3]);
-obj.setFinalStatusOfOrder("OrderSuccessfull");
-productOrderList.add(obj);
+	/**
+	 * @param productOrderRecords
+	 * @return List<ProductOrder>
+	 */
+	public static List<ProductOrder> buildProductOrdersList(List<String> productOrderRecords) {
+		List<ProductOrder> productOrderList = new ArrayList<ProductOrder>();
+		// Code here..
+		for (String e : productOrderRecords) {
+			String res[] = e.split(",");
+			String orderId = res[0];
+			String productCode = res[1];
+			String dateOfOrder = res[2]; // DateType
+			String productLevel = res[3];
+			String dateOfDelivery = res[4]; // DateType
+			String noOfProducts = res[5];
+			String noOfKmsForDelivery = res[6];
+			String managerApproval = res[7];
+			ProductOrder obj = new ProductOrder();
+			obj.setOrderId(orderId);
+			obj.setProductCode(productCode);
+			// converting String to java.uti.Date
+			obj.setDateOfOrder(ApplicationUtil.convertStringToDate(dateOfOrder));
+			obj.setProductLevel(productLevel);
+			// converting String to java.uti.Date
+			obj.setDateOfDelivery(ApplicationUtil.convertStringToDate(dateOfDelivery));
+			obj.setNoOfProducts(Integer.parseInt(noOfProducts));
+			obj.setNoOfKmsForDelivery(Double.parseDouble(noOfKmsForDelivery));
+			obj.setManagerApproval(managerApproval);
+			double[] productOrderCosts = calculateTotalOrderCost(Integer.parseInt(noOfProducts),
+					Double.parseDouble(noOfKmsForDelivery), productLevel);
+			obj.setProductCost(productOrderCosts[0]);
+			obj.setGstTax(productOrderCosts[1]);
+			obj.setDeliveryCost(productOrderCosts[2]);
+			obj.setTotalOrderCost(productOrderCosts[3]);
+			obj.setFinalStatusOfOrder("OrderSuccessfull");
+			productOrderList.add(obj);
+		}
+		return productOrderList;
+	}
+
+	public boolean addProductOrderDetails(String inputFeed) throws ProductOrderException {
+		List<ProductOrder> productOrderList = ProductOrderService
+				.buildProductOrdersList(ApplicationUtil.readFile(inputFeed));
+		ProductOrderDAO stdDao = new ProductOrderDAO();
+		return stdDao.addProductOrderDetails(productOrderList);
+		// Code here..
+		// TODO change this return value
+	}
+
+	public static double[] calculateTotalOrderCost(int noOfProducts, double noOfKmsForDelivery, String productLevel) {
+		double[] productOrderCosts = new double[4];
+		if ("Level01".equals(productLevel)) {
+			productOrderCosts[0] = 500;
+			productOrderCosts[1] = 2;
+			productOrderCosts[2] = 8;
+		} else if ("Level02".equals(productLevel)) {
+			productOrderCosts[0] = 600;
+			productOrderCosts[1] = 3;
+			productOrderCosts[2] = 10;
+		} else if ("Level03".equals(productLevel)) {
+			productOrderCosts[0] = 800;
+			productOrderCosts[1] = 5;
+			productOrderCosts[2] = 11;
+		} else if ("Level04".equals(productLevel)) {
+			productOrderCosts[0] = 1200;
+			productOrderCosts[1] = 7;
+			productOrderCosts[2] = 13;
+		} else if ("Level05".equals(productLevel)) {
+			productOrderCosts[0] = 1750;
+			productOrderCosts[1] = 8;
+			productOrderCosts[2] = 14;
+		} else if ("Level06".equals(productLevel)) {
+			productOrderCosts[0] = 2500;
+			productOrderCosts[1] = 9;
+			productOrderCosts[2] = 14;
+		}
+		productOrderCosts[0] = Math.round(productOrderCosts[0] * noOfProducts * 100.0) / 100.0;
+		productOrderCosts[1] = Math.round((productOrderCosts[1] * productOrderCosts[0]) / 100 * 100.0) / 100.0;
+		productOrderCosts[2] = Math.round(productOrderCosts[2] * noOfKmsForDelivery * 100.0) / 100.0;
+		productOrderCosts[3] = productOrderCosts[0] + productOrderCosts[1] + productOrderCosts[2];
+		return productOrderCosts;
+	}
+
+	public boolean searchProductOrder(String orderId) throws ProductOrderException {
+		boolean status = false;
+		// Code here..
+		ProductOrderDAO ptdDao = new ProductOrderDAO();
+		List<ProductOrder> ptdOrders = ptdDao.getAllProductOrderDetails();
+		for (ProductOrder e : ptdOrders) {
+			if (e.getOrderId().equals(orderId)) {
+				status = true;
+				System.out.println(e);
+				break;
+			} else {
+				System.out.println("Order Request not Found");
+			}
+		}
+		return status;
+	}
 }
-return productOrderList ;
-}
-public boolean addProductOrderDetails(String inputFeed) throws
-ProductOrderException {
-List<ProductOrder> productOrderList = ProductOrderService
-.buildProductOrdersList(ApplicationUtil.readFile(inputFeed));
-ProductOrderDAO stdDao = new ProductOrderDAO();
-return stdDao.addProductOrderDetails(productOrderList);
-//Code here..
-//TODO change this return value
-}
-public static double[] calculateTotalOrderCost(int noOfProducts, double
-noOfKmsForDelivery, String productLevel) {
-double[] productOrderCosts = new double[4];
-if ("Level01".equals(productLevel)) {
-productOrderCosts[0] = 500;
-productOrderCosts[1] = 2;
-productOrderCosts[2] = 8;
-} else if ("Level02".equals(productLevel)) {
-productOrderCosts[0] = 600;
-productOrderCosts[1] = 3;
-productOrderCosts[2] = 10;
-} else if ("Level03".equals(productLevel)) {
-productOrderCosts[0] = 800;
-productOrderCosts[1] = 5;
-productOrderCosts[2] = 11;
-} else if ("Level04".equals(productLevel)) {
-productOrderCosts[0] = 1200;
-productOrderCosts[1] = 7;
-productOrderCosts[2] = 13;
-} else if ("Level05".equals(productLevel)) {
-productOrderCosts[0] = 1750;
-productOrderCosts[1] = 8;
-productOrderCosts[2] = 14;
-} else if ("Level06".equals(productLevel)) {
-productOrderCosts[0] = 2500;
-productOrderCosts[1] = 9;
-productOrderCosts[2] = 14;
-}
-productOrderCosts[0] =
-Math.round(productOrderCosts[0]*noOfProducts*100.0)/100.0;
-productOrderCosts[1] = Math.round((productOrderCosts[1] *
-productOrderCosts[0])/100*100.0)/100.0;
-productOrderCosts[2] =
-Math.round(productOrderCosts[2]*noOfKmsForDelivery*100.0)/100.0;
-productOrderCosts[3] =
-productOrderCosts[0]+productOrderCosts[1]+productOrderCosts[2];
-return productOrderCosts;
-}
-public boolean searchProductOrder(String orderId) throws
-ProductOrderException {
-boolean status = false;
-//Code here..
-ProductOrderDAO ptdDao = new ProductOrderDAO();
-List<ProductOrder> ptdOrders = ptdDao.getAllProductOrderDetails();
-for (ProductOrder e : ptdOrders ) {
-if (e.getOrderId().equals(orderId)) {
-status = true;
-System.out.println(e);
-break;
-}
-else {
-System.out.println("Order Request not Found");
-}
-}
-return status;
-}
-}
-ApplicationUtil.Java
+
+// ApplicationUtil.Java
+
+
+
 package com.cts.zepcpd.util;
 import java.io.*;
 import java.text.*;
 import java.util.*;
 import com.cts.zepcpd.exception.ProductOrderException;
+
 public class ApplicationUtil {
-/**
-* @param fileName
-* @return List<String>
-* @throws ProductOrderException
-*/
-public static List<String> readFile(String fileName) throws
-ProductOrderException {
-List<String> productOrderList = new ArrayList<String>();
-//Code Here
-FileReader fr = null;
-BufferedReader br = null;
-try {
-fr = new FileReader(fileName);
-br = new BufferedReader(fr);
-String line = null;
-while ((line = br.readLine()) != null) {
-String[] res = line.split(",");
-String managerApproval = res[7];
-Date dtOfOrder = convertStringToDate(res[2]);
-Date dtOfDelivery = convertStringToDate(res[4]);
-if (checkIfValidOrder(dtOfOrder,dtOfDelivery,
-managerApproval)) {
-productOrderList.add(line);
+	/**
+	 * @param fileName
+	 * @return List<String>
+	 * @throws ProductOrderException
+	 */
+	public static List<String> readFile(String fileName) throws ProductOrderException {
+		List<String> productOrderList = new ArrayList<String>();
+		// Code Here
+		FileReader fr = null;
+		BufferedReader br = null;
+		try {
+			fr = new FileReader(fileName);
+			br = new BufferedReader(fr);
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				String[] res = line.split(",");
+				String managerApproval = res[7];
+				Date dtOfOrder = convertStringToDate(res[2]);
+				Date dtOfDelivery = convertStringToDate(res[4]);
+				if (checkIfValidOrder(dtOfOrder, dtOfDelivery, managerApproval)) {
+					productOrderList.add(line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return productOrderList;
+	}
+
+	/**
+	 * @param util
+	 *            Date
+	 * @return sql Date
+	 */
+	public static java.sql.Date convertUtilToSqlDate(java.util.Date uDate) {
+		java.sql.Date sDate = new java.sql.Date(uDate.getTime());
+		// Code here..
+		return sDate;
+	}
+
+	/**
+	 * @param inDate
+	 * @return Date
+	 */
+	public static Date convertStringToDate(String inDate) {
+		// Code here..
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			return format.parse(inDate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static boolean checkIfValidOrder(Date dtOfOrder, Date dtOfDelivery, String manager) {
+		boolean orderValidity = false;
+		// Code here..
+		if ("Approved".equals(manager)
+				&& ((dtOfDelivery.getTime() - dtOfOrder.getTime()) / (1000 * 60 * 60 * 24)) % 365 >= 7) {
+			orderValidity = true;
+		}
+		return orderValidity;
+	}
 }
-}
-} catch (Exception e) {
-e.printStackTrace();
-}
-return productOrderList;
-}
-/**
-* @param util
-* Date
-* @return sql Date
-*/
-public static java.sql.Date convertUtilToSqlDate(java.util.Date uDate) {
-java.sql.Date sDate = new java.sql.Date(uDate.getTime());
-//Code here..
-return sDate;
-}
-/**
-* @param inDate
-* @return Date
-*/
-public static Date convertStringToDate(String inDate) {
-//Code here..
-try {
-SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",
-Locale.ENGLISH);
-return format.parse(inDate);
-} catch (Exception e) {
-e.printStackTrace();
-return null;
-}
-}
-public static boolean checkIfValidOrder(Date dtOfOrder, Date dtOfDelivery,
-String manager) {
-boolean orderValidity = false;
-//Code here..
-if ("Approved".equals(manager)&& ((dtOfDelivery.getTime() -
-dtOfOrder.getTime()) / (1000 * 60 * 60 * 24)) % 365 >=7) {
-orderValidity = true;
-}
-return orderValidity;
-}
-}
-DBConnectionManager.Java
-* Don't change this code
-*/
-package com.cts.zepcpd.util;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-import com.cts.zepcpd.exception.ProductOrderException;
+
+// DBConnectionManager.Java
+
+
+*Don'tchange this code*/package com.cts.zepcpd.util;import java.io.FileInputStream;import java.io.FileNotFoundException;import java.io.IOException;import java.sql.Connection;import java.sql.DriverManager;import java.sql.SQLException;import java.util.Properties;import com.cts.zepcpd.exception.ProductOrderException;
+
 public class DBConnectionManager {
-private static DBConnectionManager instance;
-public static final String PROPERTY_FILE = "database.properties";
-public static final String DRIVER = "drivername";
-public static final String URL = "url";
-public static final String USER_NAME = "username";
-public static final String PASSWORD = "password";
-private static Connection connection = null;
-private static Properties props = null;
+	private static DBConnectionManager instance;
+	public static final String PROPERTY_FILE = "database.properties";
+	public static final String DRIVER = "drivername";
+	public static final String URL = "url";
+	public static final String USER_NAME = "username";
+	public static final String PASSWORD = "password";
+	private static Connection connection = null;
+	private static Properties props = null;
+
 /**
 * @throws ProductOrderException
 */
@@ -378,22 +384,24 @@ throw new ProductOrderException("Database Connection
 Creation Failed", e.getCause());
 }
 }
-/**
-* @return Connection
-*/
-public Connection getConnection() {
-return connection;
-}
-/**
-* @return DBConnectionManager
-* @throws ProductOrderException
-*/
-public static DBConnectionManager getInstance() throws
-ProductOrderException {
-// Code here
-instance = new DBConnectionManager();
-return instance;
-}
+
+	/**
+	 * @return Connection
+	 */
+	public Connection getConnection() {
+		return connection;
+	}
+
+	/**
+	 * @return DBConnectionManager
+	 * @throws ProductOrderException
+	 */
+	public static DBConnectionManager getInstance() throws ProductOrderException {
+		// Code here
+		instance = new DBConnectionManager();
+		return instance;
+	}
+
 /**
 * @throws ProductOrderException
 */
@@ -421,127 +429,153 @@ ProductOrderException("Exception during property file I/O", e.getCause());
 }
 }
 }
-ProductOrder.Java
-* Don't change this code
-*/
-package com.cts.zepcpd.vo;
-import java.util.Date;
+
+// ProductOrder.Java
+
+*Don'tchange this code*/package com.cts.zepcpd.vo;import java.util.Date;
+
 public class ProductOrder {
-String orderId;
-String productCode;
-Date dateOfOrder;
-String productLevel;
-Date dateOfDelivery;
-int noOfProducts;
-double noOfKmsForDelivery;
-String managerApproval;
-double productCost;
-double gstTax;
-double deliveryCost;
-double totalOrderCost;
-String finalStatusOfOrder;
-public ProductOrder() {
-super();
-}
-public ProductOrder(String orderId, String productCode, Date dateOfOrder,
-String productLevel, Date dateOfDelivery,
-int noOfProducts, double noOfKmsForDelivery, String
-managerApproval, double productCost, double gstTax,
-double deliveryCost, double totalOrderCost, String
-finalStatusOfOrder) {
-super();
-this.orderId = orderId;
-this.productCode = productCode;
-this.dateOfOrder = dateOfOrder;
-this.productLevel = productLevel;
-this.dateOfDelivery = dateOfDelivery;
-this.noOfProducts = noOfProducts;
-this.noOfKmsForDelivery = noOfKmsForDelivery;
-this.managerApproval = managerApproval;
-this.productCost = productCost;
-this.gstTax = gstTax;
-this.deliveryCost = deliveryCost;
-this.totalOrderCost = totalOrderCost;
-this.finalStatusOfOrder = finalStatusOfOrder;
-}
-public String getOrderId() {
-return orderId;
-}
-public void setOrderId(String orderId) {
-this.orderId = orderId;
-}
-public String getProductCode() {
-return productCode;
-}
-public void setProductCode(String productCode) {
-this.productCode = productCode;
-}
-public Date getDateOfOrder() {
-return dateOfOrder;
-}
-public void setDateOfOrder(Date dateOfOrder) {
-this.dateOfOrder = dateOfOrder;
-}
-public String getProductLevel() {
-return productLevel;
-}
-public void setProductLevel(String productLevel) {
-this.productLevel = productLevel;
-}
-public Date getDateOfDelivery() {
-return dateOfDelivery;
-}
-public void setDateOfDelivery(Date dateOfDelivery) {
-this.dateOfDelivery = dateOfDelivery;
-}
-public int getNoOfProducts() {
-return noOfProducts;
-}
-public void setNoOfProducts(int noOfProducts) {
-this.noOfProducts = noOfProducts;
-}
-public double getNoOfKmsForDelivery() {
-return noOfKmsForDelivery;
-}
-public void setNoOfKmsForDelivery(double noOfKmsForDelivery) {
-this.noOfKmsForDelivery = noOfKmsForDelivery;
-}
-public String getManagerApproval() {
-return managerApproval;
-}
-public void setManagerApproval(String managerApproval) {
-this.managerApproval = managerApproval;
-}
-public double getProductCost() {
-return productCost;
-}
-public void setProductCost(double productCost) {
-this.productCost = productCost;
-}
-public double getGstTax() {
-return gstTax;
-}
-public void setGstTax(double gstTax) {
-this.gstTax = gstTax;
-}
-public double getDeliveryCost() {
-return deliveryCost;
-}
-public void setDeliveryCost(double deliveryCost) {
-this.deliveryCost = deliveryCost;
-}
-public double getTotalOrderCost() {
-return totalOrderCost;
-}
-public void setTotalOrderCost(double totalOrderCost) {
-this.totalOrderCost = totalOrderCost;
-}
-public String getFinalStatusOfOrder() {
-return finalStatusOfOrder;
-}
-public void setFinalStatusOfOrder(String finalStatusOfOrder) {
-this.finalStatusOfOrder = finalStatusOfOrder;
-}
+	String orderId;
+	String productCode;
+	Date dateOfOrder;
+	String productLevel;
+	Date dateOfDelivery;
+	int noOfProducts;
+	double noOfKmsForDelivery;
+	String managerApproval;
+	double productCost;
+	double gstTax;
+	double deliveryCost;
+	double totalOrderCost;
+	String finalStatusOfOrder;
+
+	public ProductOrder() {
+		super();
+	}
+
+	public ProductOrder(String orderId, String productCode, Date dateOfOrder, String productLevel, Date dateOfDelivery,
+			int noOfProducts, double noOfKmsForDelivery, String managerApproval, double productCost, double gstTax,
+			double deliveryCost, double totalOrderCost, String finalStatusOfOrder) {
+		super();
+		this.orderId = orderId;
+		this.productCode = productCode;
+		this.dateOfOrder = dateOfOrder;
+		this.productLevel = productLevel;
+		this.dateOfDelivery = dateOfDelivery;
+		this.noOfProducts = noOfProducts;
+		this.noOfKmsForDelivery = noOfKmsForDelivery;
+		this.managerApproval = managerApproval;
+		this.productCost = productCost;
+		this.gstTax = gstTax;
+		this.deliveryCost = deliveryCost;
+		this.totalOrderCost = totalOrderCost;
+		this.finalStatusOfOrder = finalStatusOfOrder;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public Date getDateOfOrder() {
+		return dateOfOrder;
+	}
+
+	public void setDateOfOrder(Date dateOfOrder) {
+		this.dateOfOrder = dateOfOrder;
+	}
+
+	public String getProductLevel() {
+		return productLevel;
+	}
+
+	public void setProductLevel(String productLevel) {
+		this.productLevel = productLevel;
+	}
+
+	public Date getDateOfDelivery() {
+		return dateOfDelivery;
+	}
+
+	public void setDateOfDelivery(Date dateOfDelivery) {
+		this.dateOfDelivery = dateOfDelivery;
+	}
+
+	public int getNoOfProducts() {
+		return noOfProducts;
+	}
+
+	public void setNoOfProducts(int noOfProducts) {
+		this.noOfProducts = noOfProducts;
+	}
+
+	public double getNoOfKmsForDelivery() {
+		return noOfKmsForDelivery;
+	}
+
+	public void setNoOfKmsForDelivery(double noOfKmsForDelivery) {
+		this.noOfKmsForDelivery = noOfKmsForDelivery;
+	}
+
+	public String getManagerApproval() {
+		return managerApproval;
+	}
+
+	public void setManagerApproval(String managerApproval) {
+		this.managerApproval = managerApproval;
+	}
+
+	public double getProductCost() {
+		return productCost;
+	}
+
+	public void setProductCost(double productCost) {
+		this.productCost = productCost;
+	}
+
+	public double getGstTax() {
+		return gstTax;
+	}
+
+	public void setGstTax(double gstTax) {
+		this.gstTax = gstTax;
+	}
+
+	public double getDeliveryCost() {
+		return deliveryCost;
+	}
+
+	public void setDeliveryCost(double deliveryCost) {
+		this.deliveryCost = deliveryCost;
+	}
+
+	public double getTotalOrderCost() {
+		return totalOrderCost;
+	}
+
+	public void setTotalOrderCost(double totalOrderCost) {
+		this.totalOrderCost = totalOrderCost;
+	}
+
+	public String getFinalStatusOfOrder() {
+		return finalStatusOfOrder;
+	}
+
+	public void setFinalStatusOfOrder(String finalStatusOfOrder) {
+		this.finalStatusOfOrder = finalStatusOfOrder;
+	}
+
 @Override
 public String toString() {
 return "ZepcManagementOrder Details: [orderId=" + orderId + ",
@@ -555,17 +589,16 @@ gstTax + ", deliveryCost=" + deliveryCost + ", totalOrderCost=" + totalOrderCost
 + ", finalStatusOfOrder=" + finalStatusOfOrder + "]";
 }
 }
-SkeletonValidator.Java
-package com.cts.zepcpd.skeletonvalidator;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+// SkeletonValidator.Java
+
+package com.cts.zepcpd.skeletonvalidator;import java.lang.reflect.Array;import java.lang.reflect.Method;import java.util.logging.Level;import java.util.logging.Logger;
+
 /**
-* @author t-aarti3
-* This class is used to verify if the Code Skeleton is intact and not
-* modified by participants thereby ensuring smooth auto evaluation
-* */
+ * @author t-aarti3 This class is used to verify if the Code Skeleton is intact
+ *         and not modified by participants thereby ensuring smooth auto
+ *         evaluation
+ */
 public class SkeletonValidator {
 public SkeletonValidator() {
 validateClassName("com.cts.zepcpd.util.DBConnectionManager");
@@ -589,7 +622,9 @@ validateMethodSignature(
 "getConnection:Connection,getInstance:DBConnectionManager",
 "com.cts.zepcpd.util.DBConnectionManager");
 }
-private static final Logger LOG = Logger.getLogger("SkeletonValidator");
+
+	private static final Logger LOG = Logger.getLogger("SkeletonValidator");
+
 protected final boolean validateClassName(String className) {
 boolean iscorrect = false;
 try {
@@ -610,6 +645,7 @@ skeleton before uploading");
 }
 return iscorrect;
 }
+
 protected final void validateMethodSignature(String methodWithExcptn,
 String className) {
 Class cls = null;
