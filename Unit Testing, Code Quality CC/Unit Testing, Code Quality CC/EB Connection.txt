@@ -1,0 +1,123 @@
+package com.eb.test;
+
+import com.eb.exception.InvalidEBConnectionException;
+
+import java.util.*;
+
+import org.junit.*;
+import static org.junit.Assert.*;
+
+
+import com.eb.model.EBConnection;
+import com.eb.util.ElectricityBoard;
+
+//@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class ElectricityBoardTest {
+
+ private static ElectricityBoard ebObj;
+  private static EBConnection e;
+ @BeforeClass
+  public static void setUp() throws Exception {
+  ebObj = new ElectricityBoard();
+    List<EBConnection> ebConnectionList = new ArrayList<>();
+      e = new EBConnection(101, "abc", "Domestic", "101", "Single");
+        ebConnectionList.add(e);
+          ebConnectionList.add(new EBConnection(102, "bcd", "Commercial", "102", "Single"));
+            ebConnectionList.add(new EBConnection(103, "cde", "Domestic", "103", "Single"));
+              ebConnectionList.add(new EBConnection(104, "bcd", "Commercial", "104", "Three"));
+                ebConnectionList.add(new EBConnection(105, "cde", "Domestic", "105", "Three"));
+                  ebObj.setEbConnectionList(ebConnectionList);
+                    //Create few  objects for EBConnection class and add to a list.
+                      //Set that list to the ebConnectionList using the setEbConnectionList method in ElectricityBoard class 
+                       }
+ //Test the validateConnectionType method when the value is domestic
+  @Test
+   public void test11ValidateConnectionTypeWhenDomestic() throws InvalidEBConnectionException{
+     assertTrue(ebObj.validateConnectionType("Domestic"));
+      }
+ //Test the validateConnectionType method when the value is commertial
+  @Test
+   public void test12ValidateConnectionTypeWhenCommercial() throws InvalidEBConnectionException{
+     assertTrue(ebObj.validateConnectionType("Commercial"));
+      }
+ //Test the validateConnectionType method when the value is industrial
+  @Test
+   public void test13ValidateConnectionTypeWhenIndustrial() throws InvalidEBConnectionException{
+     //Fill the code
+       assertTrue(ebObj.validateConnectionType("Industrial"));
+        }
+ //Test the validateConnectionType method when the value is invalid
+  @Test(expected = InvalidEBConnectionException.class)
+   public void test14ValidateConnectionTypeWhenInvalid() throws InvalidEBConnectionException{
+     //Fill the code
+       assertFalse(ebObj.validateConnectionType("Invalid"));
+        }
+ //Test the viewEBConnectionById method when the value is valid
+  @Test
+   public void test15ViewEBConnectionByIdWhenValid() throws InvalidEBConnectionException{
+           //Fill the code
+                   assertSame(e,ebObj.viewEBConnectionById(101));
+                    }
+ //Test the viewEBConnectionById method when the value is invalid
+  @Test(expected = InvalidEBConnectionException.class)
+   public void test16ViewEBConnectionByIdWhenInvalid() throws InvalidEBConnectionException{
+           //Fill the code
+                   ebObj.viewEBConnectionById(109);
+                    }
+    //Test the viewEBConnectionsByConnectionType method
+        @Test
+         public void test17ViewEBConnectionsByConnectionType() throws InvalidEBConnectionException{
+              assertFalse(ebObj.viewEBConnectionsByConnectionType("Commercial").isEmpty());
+               }
+    //Test the viewEBConnectionsConnectionTypeWise method
+        @Test
+         public void test18ViewEBConnectionsConnectionTypeWise() throws InvalidEBConnectionException{
+                 //Fill the code
+                         ebObj = new ElectricityBoard();
+                           List<EBConnection> ebConnectionList = new ArrayList<>();
+                             e = new EBConnection(101, "abc", "Domestic", "101", "Single");
+                               ebConnectionList.add(e);
+                                 ebConnectionList.add(new EBConnection(102, "bcd", "Commercial", "102", "Single"));
+
+[12/1, 3:27 PM] Nani🪄: ebConnectionList.add(new EBConnection(103, "cde", "Domestic", "103", "Single"));
+                                     ebObj.setEbConnectionList(ebConnectionList);
+                                             Map<String,List<EBConnection>> result =  ebObj.viewEBConnectionsConnectionTypeWise();
+                                                     assertFalse(result.containsKey("Single"));
+                                                      }
+ //Test the countTotalConnectionForEachPhase method
+  @Test
+   public void test19CountTotalConnectionForEachPhase() throws InvalidEBConnectionException{
+
+
+//Fill the code
+  ebObj = new ElectricityBoard();
+    List<EBConnection> ebConnectionList = new ArrayList<>();
+      ebConnectionList.add(new EBConnection(102, "bcd", "Commercial", "102", "Single"));
+        ebConnectionList.add(new EBConnection(103, "cde", "Domestic", "103", "Single"));
+          ebObj.setEbConnectionList(ebConnectionList);
+            Map<String,Integer> result = ebObj.countTotalConnectionForEachPhase();
+              assertEquals(2,(int)result.get("Single"));
+                //assertThat(result.get("Single"),is(3));
+                 }
+    //Test the viewEBConnectionsByConnectionType method when the list is empty
+        @Test(expected = InvalidEBConnectionException.class)
+         public void test20ViewEBConnectionsByConnectionTypeForEmptyList() throws InvalidEBConnectionException{
+           //Fill the code
+             ebObj = new ElectricityBoard();
+               ebObj.viewEBConnectionsByConnectionType("Industrial");
+ }
+    //Test the viewEBConnectionsConnectionTypeWise method when the list is empty
+        @Test(expected = InvalidEBConnectionException.class)
+         public void test21ViewEBConnectionsConnectionTypeWiseForEmptyList() throws InvalidEBConnectionException{
+                 //Fill the code
+                         ebObj = new ElectricityBoard();
+                                 ebObj.viewEBConnectionsConnectionTypeWise();
+                                  }
+                                      //Test the countTotalConnectionForEachPhase method when the list is empty
+                                          @Test(expected = InvalidEBConnectionException.class)
+                                           public void test22CountTotalConnectionForEachPhaseForEmptyList() throws InvalidEBConnectionException{
+                                                   //Fill the code
+                                                           ebObj = new ElectricityBoard();
+                                                                   ebObj.countTotalConnectionForEachPhase();
+ }
+ }
