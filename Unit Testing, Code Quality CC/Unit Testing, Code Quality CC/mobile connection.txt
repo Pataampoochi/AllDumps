@@ -1,0 +1,278 @@
+Simplify_coding:
+#Mobile Connection
+ package com.service.test;
+
+ 
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+import java.util.Map;
+
+ 
+
+import org.junit.BeforeClass;
+
+import org.junit.FixMethodOrder;
+
+import org.junit.runners.MethodSorters;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.assertFalse;
+
+ 
+
+ 
+
+import com.service.exception.InvalidMobileServiceException;
+
+ 
+
+ 
+
+import com.service.model.Mobile;
+
+import com.service.util.MobileService;
+
+ 
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class MobileServiceTest {
+
+             
+
+              private static List<Mobile> mobileList = new ArrayList<>();
+
+              private static MobileService serviceObj;
+
+             
+
+             
+
+              @BeforeClass
+
+              public static void setUp() throws Exception {
+
+                            
+
+                             serviceObj = new MobileService();
+
+                             mobileList.add(new Mobile("8712702058","Hansika", "Idea", "Prepaid", "xyz"));
+
+ 
+
+                             //Create few  objects for Mobile class and add to mobileList.
+
+                             //Use this list to test all the methods in MobileService class that requires a list of Mobile
+
+              mobileList.add(new Mobile("8712702058","Hansika", "Idea", "Prepaid", "xyz"));
+
+                             mobileList.add(new Mobile("9090895819","Saranya", "Idea", "Postpaid", "xyz"));
+
+                                           mobileList.add(new Mobile("8712722234","Lakshmi", "Airtel", "DTH", "xyz"));
+
+                                                          mobileList.add(new Mobile("8888002058","Rao", "Idea", "mmm", "xyz"));
+
+                                                          mobileList.add(new Mobile("9867733465","Shawn", "Airtel", "Prepaid", "xyz"));
+
+                                                          mobileList.add(new Mobile("99999ttttt","Shawn", "Airtel", "Prepaid", "xyz"));
+
+ 
+
+              }
+
+             
+
+              //Test the validateConnectionType method when the value is prepaid
+
+              @Test
+
+              public void test11ValidateConnectionTypeWhenPrepaid() throws InvalidMobileServiceException{
+
+                             //fill code here
+
+                             assertTrue(serviceObj.validateConnectionType("Prepaid"));
+
+                            
+
+              }
+
+             
+
+              //Test the validateConnectionType method when the value is postpaid
+
+              @Test
+
+              public void test12ValidateConnectionTypeWhenPostpaid() throws InvalidMobileServiceException{
+
+                             //fill code here 
+
+                            assertTrue(serviceObj.validateConnectionType("Postpaid"));
+
+ 
+
+              }
+
+             
+
+              //Test the validateConnectionType method when the value is DTH
+
+              @Test
+
+              public void test13ValidateConnectionTypeWhenDTH() throws InvalidMobileServiceException {
+
+                             //fill code here
+
+                                                         assertTrue(serviceObj.validateConnectionType("DTH"));
+
+ 
+
+              }
+
+             
+
+              //Test the validateConnectionType method when the value is invalid
+
+              @Test(expected=InvalidMobileServiceException.class)
+
+              public void test14ValidateConnectionTypeWhenInvalid() throws InvalidMobileServiceException {
+
+                             //fill code here
+
+                                                         assertTrue(serviceObj.validateConnectionType("mmm"));
+
+ 
+
+              }
+
+             
+
+              //Test the viewMobileByMobileNumber method when the value is valid
+
+              @Test
+
+              public void test15ViewMobileByMobileNumberWhenValid() throws InvalidMobileServiceException {
+
+                             //fill code here
+
+                           serviceObj.viewMobileByMobileNumber(mobileList,"8712702058");
+
+}
+//Test the viewMobileByMobileNumber method when the value is invalid
+
+              @Test(expected=InvalidMobileServiceException.class)
+
+              public void test16ViewMobileByMobileNumberWhenInvalid() throws InvalidMobileServiceException{
+
+                             //fill code here
+
+                            serviceObj.viewMobileByMobileNumber(mobileList,"87127ttttt");
+
+ 
+
+              }
+
+ 
+
+    //Test the viewMobilesByConnectionType method
+
+    @Test
+
+              public void test17ViewMobilesByConnectionType() throws InvalidMobileServiceException {
+
+                             //fill code here
+
+                             List<Mobile> m1=serviceObj.viewMobilesByConnectionType(mobileList, "DTH");
+
+                                                         assertTrue(m1.get(0).getConnectionType()=="DTH");
+
+ 
+
+              }                          
+
+             
+
+              //Test the viewMobilesByConnectionType method when the list is empty
+
+              @Test(expected=InvalidMobileServiceException.class)
+
+              public void test18ViewMobilesByConnectionTypeForEmptyList() throws InvalidMobileServiceException{
+
+                             //fill code here 
+
+              ArrayList<Mobile> m= new ArrayList<>();
+
+              serviceObj.viewMobilesByConnectionType(m, "Prepaid");
+
+              }
+
+             
+
+              //Test the viewMobilesServiceProviderWise method
+
+              @Test
+
+              public void test19ViewMobilesServiceProviderWise() throws InvalidMobileServiceException{
+
+                             //fill code here
+
+                             Map<String, List<Mobile>> m2=serviceObj.viewMobilesServiceProviderWise(mobileList);
+
+              assertFalse(serviceObj.viewMobilesServiceProviderWise(mobileList).isEmpty());
+
+              }
+
+                            
+
+              //Test the viewMobilesServiceProviderWise method when the list is empty
+
+              @Test(expected=InvalidMobileServiceException.class)
+
+              public void test20ViewMobilesServiceProviderWiseForEmptyList() throws InvalidMobileServiceException{
+
+                             //fill code here
+
+                             ArrayList<Mobile> m= new ArrayList<>();
+
+                             serviceObj.viewMobilesServiceProviderWise(m);
+
+              }
+
+ 
+
+    //Test the countTotalConnectionForEachPlan method
+
+    @Test
+
+              public void test21CountTotalConnectionForEachPlan() throws InvalidMobileServiceException{
+
+                             //fill code here
+
+              assertFalse(serviceObj.countTotalConnectionForEachPlan(mobileList).isEmpty());
+
+              }
+
+             
+
+              //Test the countTotalConnectionForEachPlan method when the list is empty
+
+              @Test(expected=InvalidMobileServiceException.class)
+
+              public void test22CountTotalConnectionForEachPlanForEmptyList() throws InvalidMobileServiceException {
+
+                             //fill code here
+
+                             ArrayList<Mobile> m= new ArrayList<>();
+
+                             serviceObj.countTotalConnectionForEachPlan(m);
+
+              }
+
+             
+
+}
