@@ -1,0 +1,481 @@
+//Controller
+
+package com.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import javax.validation.Valid;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.model.Contestant;
+import com.service.ContestantService;
+import com.exception.InvalidContestantException;
+
+//use appropriate annotation to configure BookController as Controller
+@Controller
+public class ContestantController {
+	
+	//use appropriate annotation
+	@Autowired
+	private ContestantService contestantService;
+
+	@RequestMapping(value="/index" ,method=RequestMethod.GET)
+	public String index()
+	{return "index";}
+	
+	@RequestMapping(value="/showPage" ,method=RequestMethod.GET)
+	public String showPage(@ModelAttribute("contestant") Contestant contestant)
+	{return "showPage";}
+	
+	//invoke the service class - addContestant method.
+	@RequestMapping(value="/addContestant" ,method=RequestMethod.GET)
+	public String addContestant(@ModelAttribute("contestant") @Valid Contestant contestant, BindingResult result,ModelMap model) throws InvalidContestantException{
+		
+		//fill the code
+		if(!result.hasErrors()){
+			if(contestantService.addContestant(contestant))
+			{model.addAttribute("message","Registration completed successfully.");}
+		}
+		return "showPage";
+	}
+
+	
+	//fill the code
+	@RequestMapping(value="/viewList" ,method=RequestMethod.GET)
+	public String viewAllBooks(@ModelAttribute("contestant") Contestant contestant,ModelMap model) {				
+
+		//fill the code
+		model.addAttribute("blist",contestantService.viewAllContestants());
+
+		return "viewList";	
+		 				
+	}
+	
+	
+@ExceptionHandler(InvalidContestantException. class)
+  public ModelAndView exceptionHandler(Exception e) {
+ 
+	ModelAndView mav = new ModelAndView();
+	mav.addObject("err", e.getMessage());
+	mav.setViewName("exceptionPage");
+	return mav;
+	}
+
+	}
+	
+
+//International
+
+package com.controller;
+
+import java.util.Locale;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+@Configuration
+public class InternationalizationConfig extends WebMvcConfigurerAdapter {
+
+//Create a SessionLocaleResolver object and set the default locale to English  return the SessionLocaleResolver object  
+   @Bean
+   public LocaleResolver localeResolver() {
+		SessionLocaleResolver resolver = new SessionLocaleResolver();
+		resolver.setDefaultLocale(Locale.ENGLISH);
+		return resolver;
+   }
+   
+   //Create LocaleChangeInterceptor object and set the parameter name as language and return the localeChangeInterceptor
+   @Bean
+   public LocaleChangeInterceptor localeChangeInterceptor() {
+	   
+	   LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+		interceptor.setParamName("language");
+		return interceptor;
+   }
+   @Bean
+   public MessageSource messageSource() {
+      ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+      messageSource.setBasename("classpath:messages");
+      messageSource.setDefaultEncoding("UTF-8");
+      return messageSource;
+   }
+   @Bean
+   public LocalValidatorFactoryBean validator(MessageSource messageSource) {
+      LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+      bean.setValidationMessageSource(messageSource);
+      return bean;
+}
+   
+   
+   //register the LocaleChangeInterceptor
+   @Override
+   public void addInterceptors(InterceptorRegistry registry) {
+	  
+	   registry.addInterceptor(localeChangeInterceptor());
+   }
+}
+
+//Application
+
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan({"com.controller","com.model","com.service"})
+public class StarSingerAuditionApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(StarSingerAuditionApplication.class, args);
+	}
+
+}
+
+//Invliadexception
+
+package com.exception;
+
+public class InvalidContestantException extends Exception{
+	private static final long serialVersionUID = 1L;
+public InvalidContestantException(String msg) {
+	
+	//fill the code
+	super(msg);
+}
+	
+}
+
+//Book
+
+package com.model;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Email;
+
+import org.springframework.stereotype.Component;
+//use appropriate annotation to make this class as a component class
+@Component
+public class Contestant {
+	//fill the code
+	@NotBlank(message="{error.name}")
+	private String name;
+	//fill the code
+	@Min(value=16,message="{error.age}")
+	@Max(value=60,message="{error.age}")
+	private int age; 	
+	//fill the code
+	@Email(message="{error.emailId}")
+	private String emailId;
+	@NotBlank(message="{error.phoneNumber}")
+	private String phoneNumber;	
+	//fill the code
+	@NotBlank(message="{error.location}")
+	private String location;
+	
+	
+	public String getName() {
+		return category;
+	}
+	public void setName(String name) {
+		this.name=name;
+	}
+	
+public int getAge() {
+	return age;
+}
+public void setAge(int age) {
+	this.age = age;
+}
+
+public String getEmailId() {
+	return emailId;
+}
+public void setEmailId(String emailId) {
+	this.emailId=emailId;
+}
+
+public String getPhoneNumber() {
+	return phoneNumber;
+}
+public void setPhoneNumber(String phoneNumber) {
+	this.phoneNumber=phoneNumber;
+}
+public String getLocation() {
+	return location;
+}
+public void setLocation(String location) {
+	this.location=location;
+}
+public Contestant() {}
+}
+
+//service
+
+package com.service;
+
+import java.util.ArrayList;
+import com.model.Contestant;
+import org.springframework.stereotype.Service;
+import com.exception.InvalidContestantException;
+//use appropriate annotation to configure ElectricityService as a Service
+@Service
+public class contestantService {
+	private ArrayList<Contestant> contestantList=new ArrayList<Contestant>();
+	
+	//	Validate ISBN number and add book object into the book list
+	public boolean addContestant(Contestant contestant) throws InvalidContestantException{	
+		//fill the code
+		boolean flag=true;
+		for(Contestant b:contestantList)
+		{
+			if(b.getName().equalsIgnoreCase(contestant.getName()))
+			{flag=false; throw new InvalidContestantException("Contestant "+b.getEmailId()+" already registered");}
+		
+		}
+		if(flag==true){contestantList.add(contestant);}
+		return flag;
+	}
+	
+	
+	public ArrayList<Contestant> viewAllContestants(){
+		//fill the code
+		return contestantList;
+	}
+	public ArrayList<Contestant> getContestantList() {
+		return contestantList;
+	}
+
+	public void setContestantList(ArrayList<Contestant> list) {
+		this.contestantList = list;
+	}
+
+
+}
+
+
+//exception.jsp
+
+<%@page isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<html>
+<body bgcolor="lavender">
+<h1><center>Star Singer Audition</center></h1>
+
+		
+			
+			
+			
+		<div>
+		<center><h3>${err}</h3></center><br>
+		<a href="/index">Back to Home</a></center>
+		</div>
+	
+</body>
+</html>
+
+//index.jsp
+
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<body style="background-color:lavender">
+<h1><center>Star Singer Audition</center></h1>
+<center>
+<a href="/showPage">Contestant Registration</a><br><br>
+<a href="/viewList" >View all Contestants</a>
+</center>
+
+</body>
+</html>	 	  	    	    	     	      	 	
+
+//showpage.jsp
+
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isELIgnored="false"%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  margin-left:-5px;
+  margin-right:-5px;
+}
+  
+.column {
+  float: left;
+  width: 60%;
+  padding: 3px;
+}
+.column1 {
+  float: left;
+  width: 25%;
+  padding: 3px;
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+
+}
+
+th, td {
+  text-align: left;
+  padding: 5px;
+}
+
+#message{
+color:red;
+}
+</style>
+</head>
+
+<body style="background-color:lavender">
+
+
+<!--  Do not change the below line -->
+<a href="/showPage?language=en">English</a>|<a href="/showPage?language=de">German</a>|<a href="/showPage?language=fr">French</a></align>
+<!--  Design the page as per the requirements-->
+<h1><center>Star Singer Audition</center></h1>
+<form:form method="GET" action="/addContestant" modelAttribute="contestant">
+<div class="row">
+  <div class="column1">
+<table>
+<tr>
+<td><a href="/index">Home</a><br> </td>
+<tr><td><a href="/viewList">View All Contestants</a></td> </tr>
+</table>
+</div>
+  <div class="column">
+<table style="margin: 0px auto; margin-left: auto; margin-right:auto">
+		
+		
+		               
+         <!--  fill the code -->
+         <tr>
+           <td><spring:message code="label.name"/></td>
+           <td><form:input path="name" id="name"></form:input></td>
+           <td><form:errors path="name"/></td>
+         </tr>
+         <tr>
+          <td><spring:message code="label.age"/></td>
+          <td><form:input path="age" id="age"></form:input></td>
+          <td><form:errors path="age"/></td>
+        </tr>
+        <tr>
+          <td><spring:message code="label.emailId"/></td>
+          <td><form:input path="emailId" id="emailId"></form:input></td>
+          <td><form:errors path="emailId"/></td>
+        </tr>
+        <tr>
+          <td><spring:message code="label.phoneNumber"/></td>
+          <td><form:input path="phoneNumber" id="phoneNumber"></form:input></td>
+          <td><form:errors path="phoneNumber"/></td>
+        </tr>
+        <tr>
+          <td><spring:message code="label.location"/></td>
+          <td><form:input path="location" id="location"></form:input></td>
+          <td><form:errors path="location"/></td>
+        </tr>
+        <tr><td><input type="submit" value="Register" id="submit" /></td></tr>
+	
+	
+		
+	</table> 
+
+	</div>
+	</div>
+	
+	<div id="message">${message}</div></center>
+</form:form>
+
+
+</body>
+</html>	 	  	    	    	     	      	 	
+
+//view.jsp
+
+<%@page isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
+<html>
+<body bgcolor="lavender">
+<h1><center>Star Singer Audition</center></h1>
+				
+<center>
+    <table border="1" cellpadding="1">
+        <tr>
+            <th>Contestant Name</th>
+            <th>Age</th>
+            <th>Email Id</th>
+            <th>Phone Number</th>
+            <th>Location</th>
+        </tr>
+            <c:forEach items="${blist}" var="con">
+            <tr>
+                <td>${con.name}</td>
+                <td>${con.age}</td>
+                <td>${con.emailId}</td>
+                <td>${con.phoneNumber}</td>
+                <td>${con.location}</td>
+            </tr>
+            </c:forEach>
+        
+
+    </table>
+</center>
+
+
+
+<a href="/index">Back to Home</a>
+
+</body>
+</html>
